@@ -29,22 +29,23 @@ class TrafficHome extends Component {
     });
   };
 
-  ContentRender = (menu) => {
-    if (menu === 'vod') {
-      return <EasyDSS/>;
-    }
-    if (menu === 'setting') {
-      return <TrafficSetting/>;
-    }
-    if (menu === 'upload') {
-      return <VideoUpload/>;
-    }
-  };
-
   render() {
     const SpotLists = this.state.spots.map((spot, index) => {
       return <Menu.Item key={index}>{spot}</Menu.Item>;
     });
+
+    const ContentRender = (menu) => {
+      if (menu === 'vod') {
+        return <EasyDSS/>;
+      }
+      if (menu === 'setting') {
+        return <TrafficSetting/>;
+      }
+      if (menu === 'upload') {
+        return <VideoUpload/>;
+      }
+    };
+
     return (
       <Layout>
         <Header className="header" style={{
@@ -83,7 +84,7 @@ class TrafficHome extends Component {
           </Sider>
           <Layout style={{ padding: '0 24px 24px' }}>
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
-              {this.ContentRender(this.state.menuItem)}
+              {ContentRender(this.state.menuItem)}
             </Content>
           </Layout>
         </Layout>
