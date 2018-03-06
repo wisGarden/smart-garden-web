@@ -1,8 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import './style/index.css';
+import TrafficHome from './component/TrafficHome';
 import registerServiceWorker from './registerServiceWorker';
+import {
+  HashRouter as Router
+} from 'react-router-dom';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render((
+  <Router>
+    <TrafficHome/>
+  </Router>
+), document.getElementById('root'));
 registerServiceWorker();
