@@ -1,14 +1,11 @@
 import React, {Component} from 'react';
 import {
-  Form, Select, InputNumber, Switch, Radio,
-  Slider, Button, Upload, Icon, Rate, DatePicker, TimePicker
+  Form, Select, Button, Upload, Icon, DatePicker
 } from 'antd';
 
 const RangePicker = DatePicker.RangePicker;
 const FormItem = Form.Item;
 const Option = Select.Option;
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
 
 class VideoUploadItemForm extends Component {
   constructor(props) {
@@ -57,7 +54,9 @@ class VideoUploadItemForm extends Component {
               }]
             })(
               <Upload.Dragger name="files">
-                <p className="ant-upload-drag-icon">
+                <p className="ant-upload-drag-icon" style={{
+                  paddingTop:'13px'
+                }}>
                   <Icon type="inbox"/>
                 </p>
                 <p className="ant-upload-text">点击或拖拽视频文件到此处上传</p>
@@ -81,11 +80,9 @@ class VideoUploadItemForm extends Component {
           })(
             <Select
               mode="combobox"
-              placeholder='请选择监控录像地点'
+              placeholder='请选择或直接输入新的监控录像地点'
               size={'large'}
-              defaultValue="china"
               // onChange={handleChange}
-              // style={{ width: 200 }}
             >
               <Option value='图书馆'>图书馆</Option>
               <Option value='银杏大道'>银杏大道</Option>
@@ -106,6 +103,7 @@ class VideoUploadItemForm extends Component {
           )}
         </FormItem>
 
+        {/*上传*/}
         <FormItem
           wrapperCol={{ span: 12, offset: 6 }}
         >
