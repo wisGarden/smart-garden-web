@@ -9,9 +9,8 @@ import {
 } from 'react-router-dom';
 
 ReactDOM.render((
-  <div>
-    <TrafficLogin/>
+  <Router>
     <TrafficHome/>
-  </div>
+  </Router>
 ), document.getElementById('root'));
 registerServiceWorker();
