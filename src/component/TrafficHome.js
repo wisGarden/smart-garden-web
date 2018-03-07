@@ -23,7 +23,6 @@ class TrafficHome extends Component {
   }
 
   handleMenuClick = (e) => {
-    console.log(e);
     this.setState({
       menuItem: e.key
     });
@@ -31,10 +30,13 @@ class TrafficHome extends Component {
 
   render() {
     const SpotLists = this.state.spots.map((spot, index) => {
-      return <Menu.Item key={index}>{spot}</Menu.Item>;
+      return <Menu.Item key={`list-${index}`}>{spot}</Menu.Item>;
     });
 
     const ContentRender = (menu) => {
+      if (menu.substr(0, 4) === 'list') {
+        return <VideoList/>
+      }
       if (menu === 'vod') {
         return <EasyDSS/>;
       }
@@ -65,7 +67,8 @@ class TrafficHome extends Component {
               style={{ height: '100%', borderRight: 0 }}
               onClick={this.handleMenuClick}
             >
-              <SubMenu key="list" title={<span><Icon type="play-circle-o"/>录像列表</span>}>
+              <SubMenu onTitleClick={this.handleMenuClick} key="list"
+                       title={<span><Icon type="play-circle-o"/>录像列表</span>}>
                 {SpotLists}
               </SubMenu>
               <Menu.Item key="vod">

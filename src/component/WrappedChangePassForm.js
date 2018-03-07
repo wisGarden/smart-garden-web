@@ -1,11 +1,16 @@
 import React, {Component} from 'react';
 import {
+  Tabs,
+  Collapse,
   Form,
   Input,
   Button
 } from 'antd';
 
 const FormItem = Form.Item;
+function callback(key) {
+  console.log(key);
+}
 
 class ChangePassForm extends Component {
 

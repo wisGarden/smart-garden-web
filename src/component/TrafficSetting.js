@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import WrappedChangePassForm from './WrappedChangePassForm';
-import WrappedAuthNew from './WrappedAuthNew';
+import WrappedAuthNewForm from './WrappedAuthNewForm';
 import {
   Tabs,
   Collapse,
@@ -36,7 +36,7 @@ class TrafficSetting extends Component {
           </Collapse>
         </TabPane>
         <TabPane tab="用户授权" key="authNew">
-          <WrappedAuthNew/>
+          <WrappedAuthNewForm/>
         </TabPane>
       </Tabs>
     );

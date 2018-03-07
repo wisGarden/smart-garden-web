@@ -27,3 +27,11 @@
 .avatar:hover {
     cursor: pointer;
 }
+
+.video-list-card {
+    margin-bottom: 16px;
+}
+
+.video-list-card:hover {
+    cursor: pointer;
+}

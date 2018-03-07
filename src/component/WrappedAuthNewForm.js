@@ -10,9 +10,6 @@ const FormItem = Form.Item;
 
 class AuthNewForm extends Component {
 
-  state = {
-    confirmDirty: false,
-  };
   handleSubmit = (e) => {
     e.preventDefault();
     console.log(e);
@@ -21,26 +18,6 @@ class AuthNewForm extends Component {
     //     console.log('Received values of form: ', values);
     //   }
     // });
-  };
-
-  handleConfirmBlur = (e) => {
-    const value = e.target.value;
-    this.setState({ confirmDirty: this.state.confirmDirty || !!value });
-  };
-  compareToFirstPassword = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && value !== form.getFieldValue('newPass')) {
-      callback('两次密码输入不一致');
-    } else {
-      callback();
-    }
-  };
-  validateToNextPassword = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && this.state.confirmDirty) {
-      form.validateFields(['reNewPass'], { force: true });
-    }
-    callback();
   };
 
   render() {
@@ -109,7 +86,7 @@ class AuthNewForm extends Component {
               message: '请确认该用户是否具有管理员权限！',
             }],
           })(
-            <Switch checkedChildren="是" unCheckedChildren="否" defaultChecked onChange={(e) => {
+            <Switch checkedChildren="是" unCheckedChildren="否" defaultChecked={false} onChange={(e) => {
               console.log(e);
             }}/>
           )}
@@ -123,6 +100,6 @@ class AuthNewForm extends Component {
   }
 }
 
-const WrappedAuthNew = Form.create()(AuthNewForm);
+const WrappedAuthNewForm = Form.create()(AuthNewForm);
 
-export default WrappedAuthNew;
+export default WrappedAuthNewForm;
