@@ -7,6 +7,7 @@ import EasyDSS from './EasyDSS';
 import VideoList from './VideoList';
 import VideoUpload from './VideoUpload';
 import TrafficSetting from './TrafficSetting';
+import TrafficStatistics from './TrafficStatistics';
 
 const { Header, Content, Sider, Footer } = Layout;
 const { SubMenu } = Menu;
@@ -18,7 +19,8 @@ class TrafficHome extends Component {
     super(props);
     this.state = {
       spots: ['图书馆', '银杏大道', '二食堂'],
-      menuItem: ''
+      menuItem: '',
+      collapsed: true
     };
   }
 
@@ -66,6 +68,7 @@ class TrafficHome extends Component {
               // defaultOpenKeys={['sub1']}
               style={{ height: '100%', borderRight: 0 }}
               onClick={this.handleMenuClick}
+              inlineCollapsed={this.state.collapsed}
             >
               <SubMenu onTitleClick={this.handleMenuClick} key="list"
                        title={<span><Icon type="play-circle-o"/>录像列表</span>}>
@@ -87,7 +90,8 @@ class TrafficHome extends Component {
           </Sider>
           <Layout style={{ padding: '0 24px 24px' }}>
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
-              {ContentRender(this.state.menuItem)}
+              {/*{ContentRender(this.state.menuItem)}*/}
+              <TrafficStatistics/>
             </Content>
           </Layout>
         </Layout>
