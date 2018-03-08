@@ -8,6 +8,7 @@ import VideoList from './VideoList';
 import VideoUpload from './VideoUpload';
 import TrafficSetting from './TrafficSetting';
 import TrafficStatistics from './TrafficStatistics';
+import {Route, Switch, Link} from 'react-router-dom';
 
 const { Header, Content, Sider, Footer } = Layout;
 const { SubMenu } = Menu;
@@ -36,18 +37,27 @@ class TrafficHome extends Component {
     });
 
     const ContentRender = (menu) => {
-      if (menu.substr(0, 4) === 'list') {
-        return <VideoList/>
-      }
-      if (menu === 'vod') {
-        return <EasyDSS/>;
-      }
-      if (menu === 'setting') {
-        return <TrafficSetting/>;
-      }
-      if (menu === 'upload') {
-        return <VideoUpload/>;
-      }
+      // if (menu.substr(0, 4) === 'list') {
+      //   return <VideoList/>
+      // }
+      // if (menu === 'vod') {
+      //   return <EasyDSS/>;
+      // }
+      // if (menu === 'setting') {
+      //   return <TrafficSetting/>;
+      // }
+      // if (menu === 'upload') {
+      //   return <VideoUpload/>;
+      // }
+      return (
+        <Switch>
+          <Route exact path='/home/videolist' component={VideoList}/>
+          <Route path='/home/vod' component={EasyDSS}/>
+          <Route path='/home/setting' component={TrafficSetting}/>
+          <Route path='/home/upload' component={VideoUpload}/>
+          <Route path='/home/videolist/yinxingdadao' component={TrafficStatistics}/>
+        </Switch>
+      );
     };
 
     return (
@@ -71,27 +81,38 @@ class TrafficHome extends Component {
               inlineCollapsed={this.state.collapsed}
             >
               <SubMenu onTitleClick={this.handleMenuClick} key="list"
-                       title={<span><Icon type="play-circle-o"/>录像列表</span>}>
+                       title={<span><Icon type="play-circle-o"/><Link style={{
+                         color: 'rgba(0,0,0,0.65)'
+                       }} to={`/home/videolist`}>录像列表</Link></span>}>
                 {SpotLists}
               </SubMenu>
               <Menu.Item key="vod">
                 <Icon type="laptop"/>
-                <span>录像点播</span>
+                <span><Link style={{
+                  color: 'rgba(0,0,0,0.65)'
+                }} to={`/home/vod`}>录像列表</Link></span>
               </Menu.Item>
               <Menu.Item key="upload">
                 <Icon type="upload"/>
-                <span>录像上传</span>
+                <span><Link style={{
+                  color: 'rgba(0,0,0,0.65)'
+                }} to={`/home/upload`}>录像上传</Link></span>
               </Menu.Item>
               <Menu.Item key="setting">
                 <Icon type="setting"/>
-                <span>系统管理</span>
+                <span>
+                  <Link
+                    style={{
+                      color: 'rgba(0,0,0,0.65)'
+                    }} to={`/home/setting`}>系统管理</Link>
+                </span>
               </Menu.Item>
             </Menu>
           </Sider>
           <Layout style={{ padding: '0 24px 24px' }}>
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
-              {/*{ContentRender(this.state.menuItem)}*/}
-              <TrafficStatistics/>
+              {ContentRender(this.state.menuItem)}
+              {/*<TrafficStatistics/>*/}
             </Content>
           </Layout>
         </Layout>

@@ -116,7 +116,7 @@ class TrafficStatistics extends Component {
                   });
                 }
               }}
-              defaultActiveKey="1"
+              defaultActiveKey="historyData"
               tabBarExtraContent={chooseGap}
               style={{
                 paddingTop: '20px'

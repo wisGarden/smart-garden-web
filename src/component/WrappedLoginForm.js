@@ -8,6 +8,7 @@ import {
   Icon
 } from 'antd';
 import Vcode from 'react-vcode';
+import {Link} from 'react-router-dom';
 
 const FormItem = Form.Item;
 
@@ -116,7 +117,7 @@ class LoginForm extends Component {
         </FormItem>
         <FormItem {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit" className="login-form-button">
-            登 录
+            <Link to={'/home'}>登 录</Link>
           </Button>
         </FormItem>
       </Form>
