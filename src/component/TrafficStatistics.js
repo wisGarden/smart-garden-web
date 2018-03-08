@@ -1,51 +1,189 @@
 import React, {Component} from 'react';
-import {Layout, Row, Col, Card} from 'antd';
+import {Row, Col, Card, Tooltip, Tabs, DatePicker, Radio, Button} from 'antd';
+import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
+import '../style/main.css'
 
-const { Header } = Layout;
+const { RangePicker } = DatePicker;
+
+const { TabPane } = Tabs;
+
+const data = [
+  { name: '1:00', uv: 2 },
+  { name: '2:00', uv: 3 },
+  { name: '3:00', uv: 10 },
+  { name: '4:00', uv: 5 },
+  { name: '5:00', uv: 5 },
+  { name: '6:00', uv: 10 },
+  { name: '7:00', uv: 4 },
+  { name: '8:00', uv: 4 },
+  { name: '9:00', uv: 4 },
+  { name: '10:00', uv: 4 },
+  { name: '11:00', uv: 4 },
+  { name: '12:00', uv: 4 },
+];
 
 class TrafficStatistics extends Component {
+  state = {
+    isExportShow: true,
+    dateGap: 'byWeek',
+    isRangePickerShow: false
+  };
+
   render() {
+
+    const chooseGap =
+      this.state.isExportShow ? (
+        <div>
+        <span style={{
+          marginRight: '24px'
+        }}>
+          <a className={'chart-gap-choose-anchor'}>本周</a>
+          <a className={'chart-gap-choose-anchor'}>本月</a>
+          <a className={'chart-gap-choose-anchor'}>全年</a>
+        </span>
+          <RangePicker onChange={e => {
+            console.log('time is change ');
+          }}/>
+        </div>
+      ) : null;
+
+    const setDateGap = (dateGap) => {
+      this.setState({
+        dateGap,
+      }, () => {
+        console.log(this.state.dateGap);
+        if (this.state.dateGap === 'byCustom') {
+          this.setState({
+            isRangePickerShow: true
+          });
+        } else {
+          this.setState({
+            isRangePickerShow: false
+          });
+        }
+      });
+    };
+
     return (
       <div>
+
         <Row>
           <Col span={12}>
             <iframe
-              width='560'
-              height='315'
+              width='560px'
+              height='315px'
               src='http://10.211.55.6:10080/api/play/27df52b0220811e88b4b8b5d102dc31d'
               frameBorder='0'
               allowFullScreen/>
           </Col>
           <Col span={12}>
-            <Card title="活动情况预测" style={{ marginBottom: 24 }} bordered={false}>
-              <ActiveChart/>
+            <Card title="实时客流量" bordered={false} style={{ width: '100%' }}>
+              <p style={{
+                lineHeight: '30px',
+                height: '30px'
+              }}>当日人流总量</p>
+              <p style={{
+                fontWeight: 'bold',
+                fontSize: '30px',
+                height: '40px',
+                lineHeight: '40px',
+                color: 'rgba(0,0,0,.85)',
+                display: 'inline-block'
+              }}>387</p>
+              <ResponsiveContainer height={150}>
+                <LineChart
+                  data={data}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <Tooltip/>
+                  <Line type="monotone" dataKey="uv" stroke="#82ca9d"/>
+                </LineChart>
+              </ResponsiveContainer>
             </Card>
-            <Card
-              title="券核效率"
-              style={{ marginBottom: 24 }}
-              bodyStyle={{ textAlign: 'center' }}
-              bordered={false}
+          </Col>
+        </Row>
+        <Row>
+          <Col span={24}>
+            <Tabs
+              onChange={activeKey => {
+                if (activeKey === 'dataExport') {
+                  this.setState({
+                    isExportShow: false
+                  });
+                }
+                if (activeKey === 'historyData') {
+                  this.setState({
+                    isExportShow: true
+                  });
+                }
+              }}
+              defaultActiveKey="1"
+              tabBarExtraContent={chooseGap}
+              style={{
+                paddingTop: '20px'
+              }}
             >
-              <Gauge
-                format={(val) => {
-                  switch (parseInt(val, 10)) {
-                    case 20:
-                      return '差';
-                    case 40:
-                      return '中';
-                    case 60:
-                      return '良';
-                    case 80:
-                      return '优';
-                    default:
-                      return '';
-                  }
-                }}
-                title="跳出率"
-                height={180}
-                percent={87}
-              />
-            </Card>
+              <TabPane tab="历史数据" key="historyData">
+                <ResponsiveContainer height={300}>
+                  <BarChart width={730} height={250} data={data}>
+                    <CartesianGrid strokeDasharray="3 3"/>
+                    <XAxis dataKey="name"/>
+                    <YAxis/>
+                    <Tooltip/>
+                    <Legend/>
+                    <Bar dataKey="uv" fill="#82ca9d"/>
+                  </BarChart>
+                </ResponsiveContainer>
+              </TabPane>
+              <TabPane tab="数据导出" key="dataExport" style={{
+                height: '300px',
+                paddingLeft: '20px',
+                paddingTop: '5px'
+              }}>
+                <p style={{
+                  marginBottom: '5px'
+                }}>请选择导出日期：</p>
+
+                <div>
+                  <input onChange={e => {
+                    setDateGap('byWeek');
+                  }} value={'byWeek'} className={'radio-choose-date-gap'} type="radio" id={'byWeek'}
+                         name={'dateGap'}/><label
+                  htmlFor="byWeek">本周</label>
+                </div>
+                <div>
+                  <input onChange={e => {
+                    setDateGap('byMonth');
+                  }} value={'byMonth'} className={'radio-choose-date-gap'} type="radio" id={'byMonth'}
+                         name={'dateGap'}/><label
+                  htmlFor="byMonth">本月</label>
+                </div>
+                <div>
+                  <input onChange={e => {
+                    setDateGap('byYear');
+                  }} value={'byYear'} className={'radio-choose-date-gap'} type="radio" id={'byYear'}
+                         name={'dateGap'}/><label
+                  htmlFor="byYear">本年</label>
+                </div>
+                <div>
+                  <input onChange={e => {
+                    setDateGap('byCustom');
+                  }} value={'byCustom'} className={'radio-choose-date-gap'} type="radio" id={'byCustom'}
+                         name={'dateGap'}/>
+                  <label
+                    htmlFor="byCustom">自定义时间段</label>
+                  {this.state.isRangePickerShow ?
+                    <RangePicker
+                      style={{
+                        marginLeft: '10px',
+                        verticalAlign: 'middle'
+                      }}
+                    /> : null}
+                </div>
+                <Button style={{
+                  margin: '10px'
+                }} type={'primary'}>导出</Button>
+              </TabPane>
+            </Tabs>
           </Col>
         </Row>
       </div>

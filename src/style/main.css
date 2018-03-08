@@ -35,3 +35,12 @@
 .video-list-card:hover {
     cursor: pointer;
 }
+
+.chart-gap-choose-anchor {
+    color: rgba(0, 0, 0, 0.65);
+    margin-left: 24px;
+}
+
+.radio-choose-date-gap {
+    margin: 10px;
+}
