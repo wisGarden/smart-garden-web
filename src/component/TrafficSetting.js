@@ -7,15 +7,12 @@ import '../style/main.css';
 import {
   Tabs,
   Collapse,
-  Form,
   Input, Row, Col, Icon, message, Tooltip
 } from 'antd';
 
 
-//TODO 加入上传路径设置
 //TODO 在上传文件时要先确认有没有设置文件上传路径
 
-const FormItem = Form.Item;
 const Panel = Collapse.Panel;
 const TabPane = Tabs.TabPane;
 
@@ -30,7 +27,6 @@ class TrafficSetting extends Component {
   };
 
   render() {
-
     return (
       <Tabs onChange={callback} type="card">
         <TabPane tab="个人中心" key="profile">
