@@ -27,7 +27,7 @@ class TrafficLogin extends Component {
             padding: '180px 0',
           }}>
             <Row>
-              <Col span={8} offset={8}>
+              <Col span={4} offset={10}>
                 <WrappedLoginForm/>
               </Col>
             </Row>

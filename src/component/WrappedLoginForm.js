@@ -50,8 +50,8 @@ class LoginForm extends Component {
     return (
       <Form onSubmit={this.handleSubmit}>
         <FormItem
-          {...formItemLayout}
-          label="用户名"
+          /*{...formItemLayout}*/
+          // label="用户名"
         >
           {getFieldDecorator('username', {
             rules: [{
@@ -60,16 +60,16 @@ class LoginForm extends Component {
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }}/>}
-              placeholder="请输入用户名"
+              placeholder="用户名"
               type={'text'}
               style={{
-                width: '200px'
+                width: '100%'
               }}/>
           )}
         </FormItem>
         <FormItem
-          {...formItemLayout}
-          label="密码"
+          /*{...formItemLayout}*/
+          // label="密码"
         >
           {getFieldDecorator('password', {
             rules: [{
@@ -79,44 +79,47 @@ class LoginForm extends Component {
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }}/>}
-              placeholder="请输入密码"
+              placeholder="密码"
               type="password"
               style={{
-                width: '200px'
+                width: '100%'
               }}/>
           )}
         </FormItem>
+        {/*<FormItem*/}
+        {/*{...formItemLayout}*/}
+        {/*// label="验证码"*/}
+        {/*>*/}
+        {/*<Row gutter={4}>*/}
+        {/*<Col span={24}>*/}
+        {/*{getFieldDecorator('captcha', {*/}
+        {/*rules: [{ required: true, message: '请输入验证码！' }],*/}
+        {/*})(*/}
+        {/*<Input*/}
+        {/*type={'text'}*/}
+        {/*prefix={<Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }}/>}*/}
+        {/*style={{*/}
+        {/*width: '100px',*/}
+        {/*marginRight: '4px'*/}
+        {/*}}*/}
+        {/*placeholder={'验证码'}*/}
+        {/*/>*/}
+        {/*)}*/}
+        {/*<Vcode width={96} height={32} style={{*/}
+        {/*margin: '0 auto',*/}
+        {/*display: 'inline-block',*/}
+        {/*borderRadius: '4px',*/}
+        {/*verticalAlign: 'top'*/}
+        {/*}}/>*/}
+        {/*</Col>*/}
+        {/*</Row>*/}
+        {/*</FormItem>*/}
         <FormItem
-          {...formItemLayout}
-          label="验证码"
+          /*{...formItemLayout}*/
         >
-          <Row gutter={4}>
-            <Col span={24}>
-              {getFieldDecorator('captcha', {
-                rules: [{ required: true, message: '请输入验证码！' }],
-              })(
-                <Input
-                  type={'text'}
-                  prefix={<Icon type="unlock" style={{ color: 'rgba(0,0,0,.25)' }}/>}
-                  size="large"
-                  style={{
-                    width: '100px',
-                    marginRight: '4px'
-                  }}
-                  placeholder={'请输入验证码'}
-                />
-              )}
-              <Vcode width={96} height={32} style={{
-                margin: '0 auto',
-                display: 'inline-block',
-                borderRadius: '4px',
-                verticalAlign: 'top'
-              }}/>
-            </Col>
-          </Row>
-        </FormItem>
-        <FormItem {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit" className="login-form-button">
+          <Button style={{
+            width: '100%'
+          }} type="primary" htmlType="submit" className="login-form-button">
             <Link to={'/home'}>登 录</Link>
           </Button>
         </FormItem>
