@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import WrappedChangePassForm from './WrappedChangePassForm';
 import WrappedAuthNewForm from './WrappedAuthNewForm';
 import ProfileUpdateForm from './ProfileUpdateForm';
+import AllUserList from './AllUserList';
 import {
   Tabs,
   Collapse,
@@ -36,7 +37,7 @@ class TrafficSetting extends Component {
               <WrappedChangePassForm/>
             </Panel>
             <Panel header="查看用户列表" key="showUser">
-              {'查看当前用户列表，可以进行基础操作，比如帮他修改密码，删除等'}
+              <AllUserList/>
             </Panel>
           </Collapse>
         </TabPane>

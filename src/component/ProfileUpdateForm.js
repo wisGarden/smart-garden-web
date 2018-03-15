@@ -18,7 +18,8 @@ class ProfileUpdateForm extends Component {
 
     return (
       <div style={{
-        padding: '20px'
+        padding: '20px',
+        color: 'rgba(0,0,0,0.85)'
       }}>
         <Row>
           <Col span={4} style={{
