@@ -66,7 +66,13 @@ class TrafficStatistics extends Component {
 
     return (
       <div>
-
+        <p style={{
+          marginBottom: '10px'
+        }}><span style={{
+          fontWeight: 'bold',
+          marginRight: '10px',
+          fontSize: '1.2em'
+        }}>银杏大道</span><span>2018年2月28日 12:00 - 14:00</span></p>
         <Row>
           <Col span={12}>
             <iframe
