@@ -1,11 +1,16 @@
 import React, {Component} from 'react';
 import WrappedChangePassForm from './WrappedChangePassForm';
 import WrappedAuthNewForm from './WrappedAuthNewForm';
+import ProfileUpdateForm from './ProfileUpdateForm';
 import {
   Tabs,
   Collapse,
   Form
 } from 'antd';
+
+
+//TODO 加入上传路径设置
+//TODO 在上传文件时要先确认有没有设置文件上传路径
 
 const FormItem = Form.Item;
 const Panel = Collapse.Panel;
@@ -25,7 +30,7 @@ class TrafficSetting extends Component {
         <TabPane tab="个人中心" key="profile">
           <Collapse bordered={false}>
             <Panel header="查看个人信息" key="showProfile">
-              {'查看个人信息'}
+              <ProfileUpdateForm/>
             </Panel>
             <Panel header="修改密码" key="changePass">
               <WrappedChangePassForm/>

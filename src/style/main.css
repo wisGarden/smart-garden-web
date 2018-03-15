@@ -48,3 +48,7 @@
 .radio-choose-date-gap {
     margin: 10px;
 }
+
+.icon-hover:hover {
+    cursor: pointer;
+}
