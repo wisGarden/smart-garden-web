@@ -87,9 +87,9 @@ class TrafficHome extends Component {
                 {/*{SpotLists}*/}
                 <Menu.Item key={'fixed-position'}>
                   <Link style={{
-                  color: 'rgba(0,0,0,0.65)'
+                    color: 'rgba(0,0,0,0.65)'
                   }} to={`/home/videolist`}>
-                  定点客流量
+                    定点客流量
                   </Link>
                 </Menu.Item>
                 <Menu.Item key={'fixed-area'}>定区域客流密度</Menu.Item>
@@ -104,19 +104,21 @@ class TrafficHome extends Component {
                 </Link>
               </Menu.Item>
               <Menu.Item key="upload">
-                <Icon type="upload"/>
-                <span><Link style={{
+                <Link style={{
                   color: 'rgba(0,0,0,0.65)'
-                }} to={`/home/upload`}>录像上传</Link></span>
+                }} to={`/home/upload`}>
+                  <Icon type="upload"/>
+                  <span>录像上传</span>
+                </Link>
               </Menu.Item>
               <Menu.Item key="setting">
-                <Icon type="setting"/>
-                <span>
-                  <Link
-                    style={{
-                      color: 'rgba(0,0,0,0.65)'
-                    }} to={`/home/setting`}>系统管理</Link>
-                </span>
+                <Link
+                  style={{
+                    color: 'rgba(0,0,0,0.65)'
+                  }} to={`/home/setting`}>
+                  <Icon type="setting"/>
+                  <span>系统管理</span>
+                </Link>
               </Menu.Item>
             </Menu>
           </Sider>
