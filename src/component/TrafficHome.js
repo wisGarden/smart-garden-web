@@ -90,7 +90,7 @@ class TrafficHome extends Component {
                 <Icon type="laptop"/>
                 <span><Link style={{
                   color: 'rgba(0,0,0,0.65)'
-                }} to={`/home/vod`}>录像列表</Link></span>
+                }} to={`/home/vod`}>录像点播</Link></span>
               </Menu.Item>
               <Menu.Item key="upload">
                 <Icon type="upload"/>
