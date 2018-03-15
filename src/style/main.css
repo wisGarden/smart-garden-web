@@ -18,10 +18,10 @@
 }
 
 .avatar {
-    position: absolute !important;
-    right: 0 !important;
-    top: 50% !important;
-    transform: translate3d(0, -50%, 0) !important;
+    /*position: absolute !important;*/
+    /*right: 0 !important;*/
+    /*top: 50% !important;*/
+    /*transform: translate3d(0, -50%, 0) !important;*/
 }
 
 .avatar:hover {

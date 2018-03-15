@@ -15,11 +15,17 @@ class TrafficLogin extends Component {
     return (
       <div>
         <Layout>
+          {/*<Header className="header" style={{*/}
+            {/*'backgroundColor': '#18A55C',*/}
+            {/*'fontSize': '2em',*/}
+            {/*'lineHeight': '3em',*/}
+            {/*'height': '3em'*/}
+          {/*}}>*/}
           <Header className="header" style={{
             'backgroundColor': '#18A55C',
-            'fontSize': '2em',
-            'lineHeight': '3em',
-            'height': '3em'
+            // 'fontSize': '2em',
+            // 'lineHeight': '3em',
+            'height': '100px'
           }}>
             <CHeader/>
           </Header>

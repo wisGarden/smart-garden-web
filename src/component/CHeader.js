@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Avatar, Dropdown, Menu} from 'antd';
+import {Avatar, Dropdown, Menu, Row, Col} from 'antd';
 import '../style/main.css';
 
 const menu = (
@@ -21,21 +21,36 @@ class CHeader extends Component {
 
   render() {
     return (
-      <div style={{
-        position: 'relative'
-      }}>
-        <p style={{
-          textAlign: 'center',
-          position: 'absolute',
-          left: '50%',
-          fontSize: '0.8em'
-        }}>客流量监控子系统</p>
-        <span>智慧园林网络服务平台</span>
+      <Row>
+        <Col span={22} style={{
+          height: '100px',
+          padding: '12px 0'
+        }}>
+          <p style={{
+            lineHeight: '1.8em',
+            fontSize: '1.8em',
+            marginBottom: '5px'
+          }}>智慧园林网络服务平台</p>
+          <p style={{
+            lineHeight: '1.2em',
+            fontSize: '1.2em'
+          }}>客流量监控子系统</p>
+        </Col>
+        <Col span={2} style={{
+          height: '100px',
+          padding: '20px 0'
+        }}>
+          <Dropdown style={{
+            marginTop: '10px',
 
-        <Dropdown overlay={menu} trigger={['hover']} placement={'bottomLeft'}>
-          <Avatar className={'avatar'} size="large" icon="user"/>
-        </Dropdown>
-      </div>
+          }} overlay={menu} trigger={['hover']} placement={'bottomLeft'}>
+            {/*<Avatar className={'avatar'} size="large" icon="user"/>*/}
+            <Avatar className={'avatar'} style={{
+              verticalAlign: 'middle'
+            }} size='large'>Admin</Avatar>
+          </Dropdown>
+        </Col>
+      </Row>
     );
   }
 }
