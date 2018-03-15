@@ -1,12 +1,27 @@
 import React, {Component} from 'react';
-import {Card, Col, Row} from 'antd';
+import {Card, Col, Row, Select} from 'antd';
 import {Link} from 'react-router-dom';
 import '../style/main.css';
+
+const Option = Select.Option;
 
 class VideoList extends Component {
   render() {
     return (
       <div style={{ background: '#ECECEC', padding: '30px' }}>
+        <Select
+          mode="tags"
+          size={'default'}
+          placeholder="可筛选欲查看录像地点"
+          onChange={(e) => {
+            console.log(e);
+          }}
+          style={{ width: '30%', marginBottom: '20px' }}
+        >
+          <Option key={'door'}>银杏大道</Option>
+          <Option key={'catin'}>二食堂</Option>
+        </Select>
+
         <Row gutter={16}>
           <Col span={6}>
             <Link to={'/home/videolist/yinxingdadao'}>

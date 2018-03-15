@@ -81,16 +81,27 @@ class TrafficHome extends Component {
               inlineCollapsed={this.state.collapsed}
             >
               <SubMenu onTitleClick={this.handleMenuClick} key="list"
-                       title={<span><Icon type="play-circle-o"/><Link style={{
-                         color: 'rgba(0,0,0,0.65)'
-                       }} to={`/home/videolist`}>录像列表</Link></span>}>
-                {SpotLists}
-              </SubMenu>
-              <Menu.Item key="vod">
-                <Icon type="laptop"/>
-                <span><Link style={{
+                       title={<span><Icon type="play-circle-o"/>
+                         录像列表
+                       </span>}>
+                {/*{SpotLists}*/}
+                <Menu.Item key={'fixed-position'}>
+                  <Link style={{
                   color: 'rgba(0,0,0,0.65)'
-                }} to={`/home/vod`}>录像点播</Link></span>
+                  }} to={`/home/videolist`}>
+                  定点客流量
+                  </Link>
+                </Menu.Item>
+                <Menu.Item key={'fixed-area'}>定区域客流密度</Menu.Item>
+              </SubMenu>
+
+              <Menu.Item key="vod">
+                <Link style={{
+                  color: 'rgba(0,0,0,0.65)'
+                }} to={`/home/vod`}>
+                  <Icon type="laptop"/>
+                  <span>录像点播</span>
+                </Link>
               </Menu.Item>
               <Menu.Item key="upload">
                 <Icon type="upload"/>
