@@ -5,7 +5,11 @@ import '../style/main.css';
 
 const Option = Select.Option;
 
-class VideoList extends Component {
+class FixedPositionVideoList extends Component {
+  componentDidMount() {
+    console.log('fixed position video list');
+  }
+
   render() {
     return (
       <div style={{ background: '#ECECEC', padding: '30px' }}>
@@ -24,7 +28,7 @@ class VideoList extends Component {
 
         <Row gutter={16}>
           <Col span={6}>
-            <Link to={'/home/videolist/yinxingdadao'}>
+            <Link to={'/home/fixed-pos/yinxingdadao'}>
               <Card className='video-list-card' bordered={false} onClick={e => {
                 console.log(e);
               }} bodyStyle={{
@@ -175,4 +179,4 @@ class VideoList extends Component {
   }
 }
 
-export default VideoList;
+export default FixedPositionVideoList;

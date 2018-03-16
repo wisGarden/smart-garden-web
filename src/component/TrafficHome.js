@@ -4,11 +4,14 @@ import CFooter from './CFooter';
 import CHeader from './CHeader';
 import {Layout, Menu, Icon} from 'antd';
 import EasyDSS from './EasyDSS';
-import VideoList from './VideoList';
+import FixedPositionVideoList from './FixedPositionVideoList';
+import FixedAreaVideoList from './FixedAreaVideoList';
 import VideoUpload from './VideoUpload';
 import TrafficSetting from './TrafficSetting';
-import TrafficStatistics from './TrafficStatistics';
+import FixedPositionTrafficData from './FixedPositionTrafficData';
+import FixedAreaTrafficData from './FixedAreaTrafficData';
 import {Route, Switch, Link} from 'react-router-dom';
+
 
 const { Header, Content, Sider, Footer } = Layout;
 const { SubMenu } = Menu;
@@ -38,7 +41,7 @@ class TrafficHome extends Component {
 
     const ContentRender = (menu) => {
       // if (menu.substr(0, 4) === 'list') {
-      //   return <VideoList/>
+      //   return <FixedPositionVideoList/>
       // }
       // if (menu === 'vod') {
       //   return <EasyDSS/>;
@@ -51,11 +54,13 @@ class TrafficHome extends Component {
       // }
       return (
         <Switch>
-          <Route exact path='/home/videolist' component={VideoList}/>
-          <Route path='/home/vod' component={EasyDSS}/>
+          <Route exact path='/home/fixed-pos/' component={FixedPositionVideoList}/>
+          <Route exact path='/home/fixed-area/' component={FixedAreaVideoList}/>
+          <Route path='/home/fixed-pos/yinxingdadao' component={FixedPositionTrafficData}/>
+          <Route path='/home/fixed-area/yinxingdadao' component={FixedAreaTrafficData}/>
           <Route path='/home/setting' component={TrafficSetting}/>
           <Route path='/home/upload' component={VideoUpload}/>
-          <Route path='/home/videolist/yinxingdadao' component={TrafficStatistics}/>
+          <Route path='/home/vod' component={EasyDSS}/>
         </Switch>
       );
     };
@@ -88,11 +93,17 @@ class TrafficHome extends Component {
                 <Menu.Item key={'fixed-position'}>
                   <Link style={{
                     color: 'rgba(0,0,0,0.65)'
-                  }} to={`/home/videolist`}>
+                  }} to={`/home/fixed-pos`}>
                     定点客流量
                   </Link>
                 </Menu.Item>
-                <Menu.Item key={'fixed-area'}>定区域客流密度</Menu.Item>
+                <Menu.Item key={'fixed-area'}>
+                  <Link style={{
+                    color: 'rgba(0,0,0,0.65)'
+                  }} to={`/home/fixed-area`}>
+                    定区域客流密度
+                  </Link>
+                </Menu.Item>
               </SubMenu>
 
               <Menu.Item key="vod">

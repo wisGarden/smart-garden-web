@@ -22,12 +22,16 @@ const data = [
   { name: '12:00', uv: 4 },
 ];
 
-class TrafficStatistics extends Component {
+class FixedPositionTrafficData extends Component {
   state = {
     isExportShow: true,
     dateGap: 'byWeek',
     isRangePickerShow: false
   };
+
+  componentDidMount(){
+    console.log('i am mount, Fixed position');
+  }
 
   render() {
 
@@ -76,6 +80,7 @@ class TrafficStatistics extends Component {
         <Row>
           <Col span={12}>
             <iframe
+              title='fixedPosition'
               width='560px'
               height='315px'
               src='http://10.211.55.6:10080/api/play/27df52b0220811e88b4b8b5d102dc31d'
@@ -197,4 +202,4 @@ class TrafficStatistics extends Component {
   }
 }
 
-export default TrafficStatistics;
+export default FixedPositionTrafficData;
