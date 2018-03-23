@@ -8,18 +8,18 @@ const { RangePicker } = DatePicker;
 const { TabPane } = Tabs;
 
 const data = [
-  { name: '1:00', uv: 2 },
-  { name: '2:00', uv: 3 },
-  { name: '3:00', uv: 10 },
-  { name: '4:00', uv: 5 },
-  { name: '5:00', uv: 5 },
-  { name: '6:00', uv: 10 },
-  { name: '7:00', uv: 4 },
-  { name: '8:00', uv: 4 },
-  { name: '9:00', uv: 4 },
-  { name: '10:00', uv: 4 },
-  { name: '11:00', uv: 4 },
-  { name: '12:00', uv: 4 },
+  { name: '1:00', traffic_density: 0 },
+  { name: '2:00', traffic_density: 0 },
+  { name: '3:00', traffic_density: 0 },
+  { name: '4:00', traffic_density: 0 },
+  { name: '5:00', traffic_density: 4 },
+  { name: '6:00', traffic_density: 10 },
+  { name: '7:00', traffic_density: 35 },
+  { name: '8:00', traffic_density: 40 },
+  { name: '9:00', traffic_density: 30 },
+  // { name: '10:00', traffic_density: 4 },
+  // { name: '11:00', traffic_density: 4 },
+  // { name: '12:00', traffic_density: 4 },
 ];
 
 class FixedAreaTrafficData extends Component {
@@ -81,14 +81,14 @@ class FixedAreaTrafficData extends Component {
           fontWeight: 'bold',
           marginRight: '10px',
           fontSize: '1.2em'
-        }}>银杏大道</span><span>2018年2月28日 12:00 - 14:00</span></p>
+        }}>图书馆门口</span><span>2018-02-26 09:00-10:30</span></p>
         <Row>
           <Col span={12}>
             <iframe
               title='fixedPosition'
               width='560px'
               height='315px'
-              src='http://10.211.55.6:10080/api/play/27df52b0220811e88b4b8b5d102dc31d'
+              src='http://10.211.55.6:10080/api/play/362551602e8a11e88df90d6efe35918e'
               frameBorder='0'
               allowFullScreen/>
           </Col>
@@ -105,13 +105,13 @@ class FixedAreaTrafficData extends Component {
                 lineHeight: '40px',
                 color: 'rgba(0,0,0,.85)',
                 display: 'inline-block'
-              }}>387</p>
+              }}>40</p>
               <ResponsiveContainer height={150}>
                 <LineChart
                   data={data}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <Tooltip/>
-                  <Line type="monotone" dataKey="uv" stroke="#82ca9d"/>
+                  <Line type="monotone" dataKey="traffic_density" stroke="#82ca9d"/>
                 </LineChart>
               </ResponsiveContainer>
             </Card>
@@ -146,7 +146,7 @@ class FixedAreaTrafficData extends Component {
                     <YAxis/>
                     <Tooltip/>
                     <Legend/>
-                    <Bar dataKey="uv" fill="#82ca9d"/>
+                    <Bar name={'客流密度'} dataKey="traffic_density" fill="#82ca9d"/>
                   </BarChart>
                 </ResponsiveContainer>
               </TabPane>

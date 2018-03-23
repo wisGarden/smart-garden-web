@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Row, Col, Card, Tooltip, Tabs, DatePicker, Radio, Button} from 'antd';
+import {Row, Col, Card, Tooltip, Tabs, DatePicker, Button} from 'antd';
 import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
 import '../style/main.css'
 
@@ -8,18 +8,17 @@ const { RangePicker } = DatePicker;
 const { TabPane } = Tabs;
 
 const data = [
-  { name: '1:00', uv: 2 },
-  { name: '2:00', uv: 3 },
-  { name: '3:00', uv: 10 },
-  { name: '4:00', uv: 5 },
-  { name: '5:00', uv: 5 },
-  { name: '6:00', uv: 10 },
-  { name: '7:00', uv: 4 },
-  { name: '8:00', uv: 4 },
-  { name: '9:00', uv: 4 },
-  { name: '10:00', uv: 4 },
-  { name: '11:00', uv: 4 },
-  { name: '12:00', uv: 4 },
+  { name: '1:00', traffic_data: 2 },
+  { name: '2:00', traffic_data: 3 },
+  { name: '3:00', traffic_data: 10 },
+  { name: '4:00', traffic_data: 15 },
+  { name: '5:00', traffic_data: 50 },
+  { name: '6:00', traffic_data: 70 },
+  { name: '7:00', traffic_data: 65 },
+  { name: '8:00', traffic_data: 40 },
+  { name: '9:00', traffic_data: 20 },
+  { name: '10:00', traffic_data: 30 },
+  { name: '11:00', traffic_data: 25 },
 ];
 
 class FixedPositionTrafficData extends Component {
@@ -29,7 +28,7 @@ class FixedPositionTrafficData extends Component {
     isRangePickerShow: false
   };
 
-  componentDidMount(){
+  componentDidMount() {
     console.log('i am mount, Fixed position');
   }
 
@@ -76,14 +75,14 @@ class FixedPositionTrafficData extends Component {
           fontWeight: 'bold',
           marginRight: '10px',
           fontSize: '1.2em'
-        }}>银杏大道</span><span>2018年2月28日 12:00 - 14:00</span></p>
+        }}>银杏大道</span><span>2017-12-11 11:00-12:00</span></p>
         <Row>
           <Col span={12}>
             <iframe
               title='fixedPosition'
               width='560px'
               height='315px'
-              src='http://10.211.55.6:10080/api/play/27df52b0220811e88b4b8b5d102dc31d'
+              src='http://10.211.55.6:10080/api/play/125c65102e9511e88df90d6efe35918e'
               frameBorder='0'
               allowFullScreen/>
           </Col>
@@ -106,7 +105,7 @@ class FixedPositionTrafficData extends Component {
                   data={data}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <Tooltip/>
-                  <Line type="monotone" dataKey="uv" stroke="#82ca9d"/>
+                  <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
                 </LineChart>
               </ResponsiveContainer>
             </Card>
@@ -141,7 +140,7 @@ class FixedPositionTrafficData extends Component {
                     <YAxis/>
                     <Tooltip/>
                     <Legend/>
-                    <Bar dataKey="uv" fill="#82ca9d"/>
+                    <Bar name={'客流量'} dataKey="traffic_data" fill="#82ca9d"/>
                   </BarChart>
                 </ResponsiveContainer>
               </TabPane>

@@ -34,7 +34,7 @@ class CHeader extends Component {
           <p style={{
             lineHeight: '1.2em',
             fontSize: '1.2em'
-          }}>客流量监控子系统</p>
+          }}>客流量分析与监控</p>
         </Col>
         <Col span={2} style={{
           height: '100px',
