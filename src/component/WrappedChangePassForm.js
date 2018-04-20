@@ -1,30 +1,47 @@
 import React, {Component} from 'react';
 import {
-  Tabs,
-  Collapse,
   Form,
   Input,
-  Button
+  Button,
+  message
 } from 'antd';
+import api from '../service/api';
 
 const FormItem = Form.Item;
-function callback(key) {
-  console.log(key);
-}
 
 class ChangePassForm extends Component {
 
   state = {
     confirmDirty: false,
+    user_old_pass: '',
+    user_new_pass: '',
+    repeat_user_new_pass: ''
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(e);
-    // this.props.form.validateFieldsAndScroll((err, values) => {
-    //   if (!err) {
-    //     console.log('Received values of form: ', values);
-    //   }
-    // });
+    if (this.state.user_new_pass !== this.state.repeat_user_new_pass) {
+      message.error('两次密码输入不一致!');
+    } else {
+      const userObj = {
+        user_name: localStorage.getItem('user_name'),
+        user_old_pass: this.state.user_old_pass,
+        user_new_pass: this.state.user_new_pass
+      };
+      api.changePass(userObj, res => {
+        const result = res.data;
+        if (result.success === 'true') {
+          message.success('密码修改成功！');
+          this.setState({
+            user_old_pass: '',
+            user_new_pass: '',
+            repeat_user_new_pass: ''
+          });
+        } else if (result.success === 'false' && result.message === 'wrong pass') {
+          message.error('密码错误！');
+        }
+      })
+    }
   };
 
   handleConfirmBlur = (e) => {
@@ -82,9 +99,17 @@ class ChangePassForm extends Component {
               required: true, message: '请输入密码！',
             }],
           })(
-            <Input type={'password'} style={{
-              width: '200px'
-            }}/>
+            <Input type={'password'}
+              // value={this.state.user_old_pass}
+                   onChange={(e) => {
+                     this.setState({
+                       user_old_pass: e.target.value
+                     }, () => {
+                     });
+                   }}
+                   style={{
+                     width: '200px'
+                   }}/>
           )}
         </FormItem>
         <FormItem
@@ -99,9 +124,17 @@ class ChangePassForm extends Component {
               validator: this.validateToNextPassword,
             }],
           })(
-            <Input type="password" style={{
-              width: '200px'
-            }}/>
+            <Input type="password"
+              // value={this.state.user_new_pass}
+                   onChange={(e) => {
+                     this.setState({
+                       user_new_pass: e.target.value
+                     }, () => {
+                     });
+                   }}
+                   style={{
+                     width: '200px'
+                   }}/>
           )}
         </FormItem>
         <FormItem
@@ -115,9 +148,18 @@ class ChangePassForm extends Component {
               validator: this.compareToFirstPassword,
             }],
           })(
-            <Input type="password" onBlur={this.handleConfirmBlur} style={{
-              width: '200px'
-            }}/>
+            <Input type="password"
+              // value={this.state.repeat_user_new_pass}
+                   onChange={(e) => {
+                     this.setState({
+                       repeat_user_new_pass: e.target.value
+                     }, () => {
+                     });
+                   }}
+                   onBlur={this.handleConfirmBlur}
+                   style={{
+                     width: '200px'
+                   }}/>
           )}
         </FormItem>
         <FormItem {...tailFormItemLayout}>

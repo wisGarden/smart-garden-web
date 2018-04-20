@@ -49,8 +49,8 @@ function updateUserInfo(userObj, callback) {
 function changePass(userObj, callback) {
   const user = new FormData();
   user.append('user_name', userObj.user_name);
-  user.append('user_old_pass', user.user_old_pass);
-  user.append('user_new_pass', user.user_new_pass);
+  user.append('user_old_pass', userObj.user_old_pass);
+  user.append('user_new_pass', userObj.user_new_pass);
   axios.post(`${config.apiUrl}/user/changePass/`, user, headers)
     .then(callback)
     .catch(error => {
