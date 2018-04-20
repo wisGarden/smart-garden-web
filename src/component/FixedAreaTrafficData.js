@@ -13,13 +13,19 @@ const data = [
   { name: '3:00', traffic_density: 0 },
   { name: '4:00', traffic_density: 0 },
   { name: '5:00', traffic_density: 4 },
-  { name: '6:00', traffic_density: 10 },
-  { name: '7:00', traffic_density: 35 },
-  { name: '8:00', traffic_density: 40 },
-  { name: '9:00', traffic_density: 30 },
-  // { name: '10:00', traffic_density: 4 },
-  // { name: '11:00', traffic_density: 4 },
-  // { name: '12:00', traffic_density: 4 },
+  { name: '6:00', traffic_density: 50 },
+  { name: '7:00', traffic_density: 75 },
+  { name: '8:00', traffic_density: 130 },
+  { name: '9:00', traffic_density: 163 },
+  { name: '10:00', traffic_density: 202 },
+  { name: '11:00', traffic_density: 159 },
+  { name: '12:00', traffic_density: 142 },
+  { name: '13:00', traffic_density: 100 },
+  { name: '14:00', traffic_density: 120 },
+  { name: '15:00', traffic_density: 110 },
+  { name: '16:00', traffic_density: 135 },
+  { name: '17:00', traffic_density: 159 },
+  { name: '18:00', traffic_density: 135 },
 ];
 
 class FixedAreaTrafficData extends Component {
@@ -81,23 +87,24 @@ class FixedAreaTrafficData extends Component {
           fontWeight: 'bold',
           marginRight: '10px',
           fontSize: '1.2em'
-        }}>图书馆门口</span><span>2018-02-26 09:00-10:30</span></p>
+        }}>外滩东4号</span><span>2018-02-26 18:00-19:40</span></p>
         <Row>
           <Col span={12}>
-            <iframe
-              title='fixedPosition'
-              width='560px'
-              height='315px'
-              src='http://10.211.55.6:10080/api/play/362551602e8a11e88df90d6efe35918e'
-              frameBorder='0'
-              allowFullScreen/>
+            {/*<iframe*/}
+            {/*title='fixedPosition'*/}
+            {/*width='560px'*/}
+            {/*height='315px'*/}
+            {/*src='http://10.211.55.6:10080/api/play/362551602e8a11e88df90d6efe35918e'*/}
+            {/*frameBorder='0'*/}
+            {/*allowFullScreen/>*/}
+            <img src="/img/area.png" alt="" height={'350px'} width={'550px'}/>
           </Col>
           <Col span={12}>
             <Card title="实时客流密度" bordered={false} style={{ width: '100%' }}>
               <p style={{
                 lineHeight: '30px',
                 height: '30px'
-              }}>当日最大客流密度</p>
+              }}>当前客流密度</p>
               <p style={{
                 fontWeight: 'bold',
                 fontSize: '30px',
@@ -105,7 +112,7 @@ class FixedAreaTrafficData extends Component {
                 lineHeight: '40px',
                 color: 'rgba(0,0,0,.85)',
                 display: 'inline-block'
-              }}>40</p>
+              }}>135</p>
               <ResponsiveContainer height={150}>
                 <LineChart
                   data={data}

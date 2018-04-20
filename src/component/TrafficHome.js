@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import '../style/main.css';
 import CFooter from './CFooter';
 import CHeader from './CHeader';
-import {Layout, Menu, Icon} from 'antd';
+import {Layout, Menu, Icon, message} from 'antd';
 import EasyDSS from './EasyDSS';
 import FixedPositionVideoList from './FixedPositionVideoList';
 import FixedAreaVideoList from './FixedAreaVideoList';
@@ -11,6 +11,7 @@ import TrafficSetting from './TrafficSetting';
 import FixedPositionTrafficData from './FixedPositionTrafficData';
 import FixedAreaTrafficData from './FixedAreaTrafficData';
 import {Route, Switch, Link} from 'react-router-dom';
+import api from '../service/api'
 
 
 const { Header, Content, Sider, Footer } = Layout;
@@ -26,6 +27,13 @@ class TrafficHome extends Component {
       menuItem: '',
       collapsed: true
     };
+  }
+
+  componentDidMount() {
+    if (!api.isLogged()) {
+      message.error('请先登录！');
+      this.props.history.replace('/login');
+    }
   }
 
   handleMenuClick = (e) => {

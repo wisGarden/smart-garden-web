@@ -3,6 +3,7 @@ import CHeader from './CHeader';
 import CFooter from './CFooter';
 import WrappedLoginForm from './WrappedLoginForm';
 import {Layout, Row, Col} from 'antd';
+import api from '../service/api'
 
 const { Header, Content, Footer } = Layout;
 
@@ -11,15 +12,27 @@ class TrafficLogin extends Component {
     super(props);
   }
 
+  componentDidMount() {
+    if (api.isLogged()) {
+      this.props.history.push('/home');
+    }
+  }
+
+  logged = () => {
+    if (api.isLogged()) {
+      this.props.history.push('/home');
+    }
+  };
+
   render() {
     return (
       <div>
         <Layout>
           {/*<Header className="header" style={{*/}
-            {/*'backgroundColor': '#18A55C',*/}
-            {/*'fontSize': '2em',*/}
-            {/*'lineHeight': '3em',*/}
-            {/*'height': '3em'*/}
+          {/*'backgroundColor': '#18A55C',*/}
+          {/*'fontSize': '2em',*/}
+          {/*'lineHeight': '3em',*/}
+          {/*'height': '3em'*/}
           {/*}}>*/}
           <Header className="header" style={{
             'backgroundColor': '#18A55C',
@@ -31,10 +44,11 @@ class TrafficLogin extends Component {
           </Header>
           <Content style={{
             padding: '180px 0',
+            height: '650px'
           }}>
             <Row>
               <Col span={4} offset={10}>
-                <WrappedLoginForm/>
+                <WrappedLoginForm onlogged={this.logged}/>
               </Col>
             </Row>
           </Content>

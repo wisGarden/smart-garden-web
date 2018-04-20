@@ -3,24 +3,65 @@ import {
   Form,
   Input,
   Button,
-  Row,
+  message,
   Col,
   Icon
 } from 'antd';
 import Vcode from 'react-vcode';
 import {Link} from 'react-router-dom';
+import api from '../service/api'
 
 const FormItem = Form.Item;
 
 class LoginForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user_name: '',
+      user_pass: ''
+    }
+  }
+
+  changeUserName = (e) => {
+    this.setState({
+      user_name: e.target.value
+    })
+  };
+
+  changePass = (e) => {
+    this.setState({
+      user_pass: e.target.value
+    })
+  };
+
   handleSubmit = (e) => {
+    localStorage.setItem('isLogged', 'false');
     e.preventDefault();
-    console.log(e);
-    // this.props.form.validateFieldsAndScroll((err, values) => {
-    //   if (!err) {
-    //     console.log('Received values of form: ', values);
-    //   }
-    // });
+    const userObj = {
+      user_name: this.state.user_name,
+      user_pass: this.state.user_pass
+    };
+    if (userObj.user_name === '' || userObj.user_pass === '') {
+      message.error('用户名或密码为空！');
+    } else {
+      api.login(userObj, res => {
+        const result = res.data;
+        console.log(result);
+        if (result.success === 'true') {
+          localStorage.setItem('isLogged', 'true');
+          localStorage.setItem('user_name', result.message.user_name);
+          localStorage.setItem('user_role', result.message.user_role);
+          localStorage.setItem('user_id', result.message.user_id);
+          this.props.onlogged();
+        } else {
+          if (result.message === 'wrong password') {
+            message.error('密码错误，请重新输入！')
+          } else if (result.message === 'user not found') {
+            message.error('未找到该用户！')
+          }
+        }
+      });
+    }
   };
 
   render() {
@@ -62,6 +103,7 @@ class LoginForm extends Component {
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }}/>}
               placeholder="用户名"
               type={'text'}
+              onInput={this.changeUserName}
               style={{
                 width: '100%'
               }}/>
@@ -81,6 +123,7 @@ class LoginForm extends Component {
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }}/>}
               placeholder="密码"
               type="password"
+              onInput={this.changePass}
               style={{
                 width: '100%'
               }}/>
@@ -119,8 +162,8 @@ class LoginForm extends Component {
         >
           <Button style={{
             width: '100%'
-          }} type="primary" htmlType="submit" className="login-form-button">
-            <Link to={'/home'}>登 录</Link>
+          }} type="primary" htmlType="submit" onClick={this.handleSubmit} className="login-form-button">
+            登 录
           </Button>
         </FormItem>
       </Form>
