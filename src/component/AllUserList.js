@@ -1,25 +1,37 @@
 import React, {Component} from 'react';
-import {Table, Divider, Button, Modal, Input, message} from 'antd';
+import {Table, Divider, Button, Modal, Input, message, Popconfirm} from 'antd';
+import api from '../service/api';
 
-const dataSource = [{
-  key: '1',
-  user_name: 'user1',
-  user_role: '管理员',
-  user_mobile: '13123433233',
-  user_email: '123@126.com'
-}, {
-  key: '2',
-  user_name: 'user2',
-  user_role: '普通用户',
-  user_mobile: '13123433233',
-  user_email: '123@126.com'
-}];
+const user_role_mapping = {
+  '1': '管理员',
+  '0': '工作人员'
+};
 
 
 class AllUserList extends Component {
   state = {
     is_modal_show: false,
-    resetPassName: ''
+    resetPassName: '',
+    dataSource: [],
+    reset_new_pass: ''
+  };
+
+  componentDidMount() {
+    this.getAllUser();
+  }
+
+  getAllUser = () => {
+    api.getUserList(res => {
+      this.setState({
+        dataSource: res.data.map((user, index) => ({
+          key: index,
+          user_name: user.user_name,
+          user_role: user_role_mapping[user.user_role],
+          user_mobile: user.user_mobile,
+          user_email: user.user_email
+        }))
+      });
+    })
   };
 
   columns = [{
@@ -49,25 +61,64 @@ class AllUserList extends Component {
       <Divider type="vertical"/>
       <a>禁用</a>
       <Divider type="vertical"/>
-      <a>删除</a>
+      <Popconfirm title={`确定删除 ${record.user_name} 么？`}
+                  onConfirm={() => {
+                    this.deleteUser(record.user_name);
+                  }}
+                  okText="删除"
+                  cancelText="取消">
+        <a>删除</a>
+      </Popconfirm>
     </span>
     ),
   }];
 
+  deleteUser = (delete_user) => {
+    if (delete_user !== localStorage.getItem('user_name')) {
+      let userObj = {
+        user_name: localStorage.getItem('user_name'),
+        delete_user_name: delete_user
+      };
+      console.log(userObj);
+      api.deleteUser(userObj, res => {
+        const result = res.data;
+        console.log(result);
+        if (result.success === 'true') {
+          message.success('删除成功！');
+          this.getAllUser();
+        }
+      })
+    }
+    if (delete_user === localStorage.getItem('user_name')) {
+      message.error('不能删除自己！');
+    }
+  };
 
   changePass = (user_name) => {
     this.setState({
       is_modal_show: true,
       resetPassName: user_name
     }, () => {
-      console.log(user_name);
     });
   };
 
 
   resetPass = () => {
     this.handleOk();
-    message.success('密码重置成功！');
+    const userObj = {
+      user_name: localStorage.getItem('user_name'),
+      reset_user_name: this.state.resetPassName,
+      reset_new_pass: this.state.reset_new_pass
+    };
+    api.resetUserPass(userObj, res => {
+      const result = res.data;
+      if (result.success === 'true') {
+        message.success('密码重置成功！');
+        this.setState({
+          reset_new_pass: ''
+        });
+      }
+    });
   };
 
   handleOk = () => {
@@ -95,9 +146,18 @@ class AllUserList extends Component {
           ]}
         >
           <p>请输入新密码：</p>
-          <Input placeholder={'请输入新密码'}/>
+          <Input value={this.state.reset_new_pass}
+                 onPressEnter={this.resetPass}
+                 onChange={(e) => {
+                   this.setState({
+                     reset_new_pass: e.target.value,
+                   }, () => {
+                   });
+                 }}
+                 type={'password'}
+                 placeholder={'请输入新密码'}/>
         </Modal>
-        <Table columns={this.columns} dataSource={dataSource}/>
+        <Table columns={this.columns} dataSource={this.state.dataSource}/>
       </div>
     );
   };

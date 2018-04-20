@@ -58,10 +58,44 @@ function changePass(userObj, callback) {
     })
 }
 
+function getUserList(callback) {
+  axios.get(`${config.apiUrl}/user/users/`)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
+function resetUserPass(userObj, callback) {
+  const user = new FormData();
+  user.append('user_name', userObj.user_name);
+  user.append('reset_user_name', userObj.reset_user_name);
+  user.append('reset_new_pass', userObj.reset_new_pass);
+  axios.post(`${config.apiUrl}/user/resetPass/`, user, headers)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
+function deleteUser(userObj, callback) {
+  const user = new FormData();
+  user.append('user_name', userObj.user_name);
+  user.append('delete_user_name', userObj.delete_user_name);
+  axios.post(`${config.apiUrl}/user/delete/`, user, headers)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    });
+}
+
 export default {
   login,
   isLogged,
   getUserInfo,
   updateUserInfo,
   changePass,
+  getUserList,
+  resetUserPass,
+  deleteUser,
 }
