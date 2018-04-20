@@ -39,14 +39,18 @@ class TrafficSetting extends Component {
             <Panel header="修改密码" key="changePass">
               <WrappedChangePassForm/>
             </Panel>
-            <Panel header="查看用户列表" key="showUser">
-              <AllUserList/>
-            </Panel>
+            {localStorage.getItem('user_role') === '1' ? (
+              <Panel header="查看用户列表" key="showUser">
+                <AllUserList/>
+              </Panel>
+            ) : null}
           </Collapse>
         </TabPane>
-        <TabPane tab="用户授权" key="authNew">
-          <WrappedAuthNewForm/>
-        </TabPane>
+        {localStorage.getItem('user_role') === '1' ? (
+          <TabPane tab="用户授权" key="authNew">
+            <WrappedAuthNewForm/>
+          </TabPane>
+        ) : null}
         <TabPane tab="服务配置" key="systemSetting">
           <Collapse bordered={false}>
             <Panel header="录像上传路径" key="file_path">

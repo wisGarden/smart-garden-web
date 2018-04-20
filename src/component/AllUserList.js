@@ -79,10 +79,8 @@ class AllUserList extends Component {
         user_name: localStorage.getItem('user_name'),
         delete_user_name: delete_user
       };
-      console.log(userObj);
       api.deleteUser(userObj, res => {
         const result = res.data;
-        console.log(result);
         if (result.success === 'true') {
           message.success('删除成功！');
           this.getAllUser();

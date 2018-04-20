@@ -89,6 +89,18 @@ function deleteUser(userObj, callback) {
     });
 }
 
+function authUser(userObj, callback) {
+  const user = new FormData();
+  user.append('user_name', userObj.user_name);
+  user.append('user_role', userObj.user_role);
+  user.append('user_pass', userObj.user_pass);
+  axios.post(`${config.apiUrl}/user/auth/`, user, headers)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
 export default {
   login,
   isLogged,
@@ -98,4 +110,5 @@ export default {
   getUserList,
   resetUserPass,
   deleteUser,
+  authUser,
 }

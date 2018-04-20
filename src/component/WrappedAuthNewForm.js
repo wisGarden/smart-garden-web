@@ -3,21 +3,40 @@ import {
   Form,
   Input,
   Button,
-  Switch
+  Switch,
+  message,
 } from 'antd';
+import api from '../service/api';
 
 const FormItem = Form.Item;
 
 class AuthNewForm extends Component {
 
+  state = {
+    user_name: '',
+    user_role: '0',
+    user_pass: ''
+  };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(e);
-    // this.props.form.validateFieldsAndScroll((err, values) => {
-    //   if (!err) {
-    //     console.log('Received values of form: ', values);
-    //   }
-    // });
+    console.log(this.state.user_name, this.state.user_pass, this.state.user_role);
+    const { user_name, user_pass, user_role } = this.state;
+    const userObj = { user_name, user_pass, user_role };
+    api.authUser(userObj, (res) => {
+      const result = res.data;
+      console.log(result);
+      if (result.success === 'true') {
+        message.success('用户授权成功！');
+      }
+      if (result.success === 'false' && result.message === 'user exist') {
+        message.error('该用户已存在，请更换用户名!');
+        this.setState({
+          user_name: '',
+          user_pass: '',
+        });
+      }
+    })
   };
 
   render() {
@@ -55,9 +74,16 @@ class AuthNewForm extends Component {
               required: true, message: '请输入用户名！',
             }],
           })(
-            <Input type={'text'} style={{
-              width: '200px'
-            }}/>
+            <Input
+              onChange={(e) => {
+                this.setState({
+                  user_name: e.target.value
+                });
+              }}
+              type={'text'}
+              style={{
+                width: '200px'
+              }}/>
           )}
         </FormItem>
 
@@ -70,9 +96,16 @@ class AuthNewForm extends Component {
               required: true, message: '请输入密码！',
             }],
           })(
-            <Input type={'password'} style={{
-              width: '200px'
-            }}/>
+            <Input
+              onChange={(e) => {
+                this.setState({
+                  user_pass: e.target.value
+                });
+              }}
+              type={'password'}
+              style={{
+                width: '200px'
+              }}/>
           )}
         </FormItem>
 
@@ -86,9 +119,15 @@ class AuthNewForm extends Component {
               message: '请确认该用户是否具有管理员权限！',
             }],
           })(
-            <Switch checkedChildren="是" unCheckedChildren="否" defaultChecked={false} onChange={(e) => {
-              console.log(e);
-            }}/>
+            <Switch
+              checkedChildren="是"
+              unCheckedChildren="否"
+              defaultChecked={false}
+              onChange={(e) => {
+                this.setState({
+                  user_role: e ? '1' : '0'
+                });
+              }}/>
           )}
         </FormItem>
 
