@@ -1,21 +1,78 @@
 import React, {Component} from 'react';
 import {Input, Tooltip, Icon, Row, Col, message} from 'antd';
 import '../style/main.css';
+import api from '../service/api';
 
+const user_role_mapping = {
+  '1': '管理员',
+  '0': '工作人员'
+};
 
 class ProfileUpdateForm extends Component {
   state = {
-    user_name: 'Admin',
-    user_role: '管理员',
-    user_mobile: '13298987678',
-    user_email: '123@126.com',
+    user_name: '',
+    user_role: '',
+    user_mobile: '',
+    user_email: '',
     is_user_name_disable: true,
     is_user_mobile_disable: true,
     is_user_email_disable: true
   };
 
-  render() {
+  componentDidMount() {
+    const user_name = localStorage.getItem('user_name');
+    api.getUserInfo(user_name, res => {
+      const user = res.data;
+      if (user.success) {
+        const { user_name, user_mobile, user_email, user_role } = user;
+        this.setState({
+          user_name,
+          user_mobile,
+          user_email,
+          user_role: user_role_mapping[user_role]
+        }, () => {
+          localStorage.setItem('user_mobile', this.state.user_mobile);
+          localStorage.setItem('user_email', this.state.user_email)
+        });
+      }
+    })
+  }
 
+  updateUserInfo = (type, successMes) => {
+    const userObj = {
+      user_name: localStorage.getItem('user_name'),
+      user_new_name: this.state.user_name,
+      user_mobile: this.state.user_mobile,
+      user_email: this.state.user_email
+    };
+    console.log(userObj);
+    api.updateUserInfo(userObj, res => {
+      const result = res.data;
+      console.log(result);
+      if (result.success === 'true') {
+        localStorage.setItem(type, result.message[type]);
+        message.success(successMes);
+        // window.location.reload();
+      } else if (result.success === 'false' && result.message === 'the user name is used') {
+        message.error('用户名已占用！');
+        this.setState({
+          user_name: localStorage.getItem('user_name'),
+        });
+      } else if (result.success === 'false' && result.message === 'wrong mobile') {
+        message.error('联系方式格式错误！');
+        this.setState({
+          user_mobile: localStorage.getItem('user_mobile')
+        });
+      } else if (result.success === 'false' && result.message === 'wrong email') {
+        message.error('邮箱格式错误！');
+        this.setState({
+          user_email: localStorage.getItem('user_email')
+        });
+      }
+    });
+  };
+
+  render() {
     return (
       <div style={{
         padding: '20px',
@@ -34,6 +91,8 @@ class ProfileUpdateForm extends Component {
             <Input id={'user_name'} onChange={(e) => {
               this.setState({
                 user_name: e.target.value
+              }, () => {
+                // console.log(this.state.user_name);
               });
             }} value={this.state.user_name} disabled={this.state.is_user_name_disable}/>
           </Col>
@@ -52,7 +111,7 @@ class ProfileUpdateForm extends Component {
                 this.setState({
                   is_user_name_disable: true
                 }, () => {
-                  message.success('用户名修改成功');
+                  this.updateUserInfo('user_name', '用户名修改成功');
                 });
               }} type={'check'}/>
             }
@@ -111,7 +170,7 @@ class ProfileUpdateForm extends Component {
                 this.setState({
                   is_user_mobile_disable: true
                 }, () => {
-                  message.success('联系方式修改成功');
+                  this.updateUserInfo('user_mobile', '联系方式修改成功');
                 });
               }} type={'check'}/>
             }
@@ -149,7 +208,7 @@ class ProfileUpdateForm extends Component {
                 this.setState({
                   is_user_email_disable: true
                 }, () => {
-                  message.success('电子邮件修改成功');
+                  this.updateUserInfo('user_email', '电子邮件修改成功');
                 });
               }} type={'check'}/>
             }

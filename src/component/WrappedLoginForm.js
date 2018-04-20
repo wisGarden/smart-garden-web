@@ -55,9 +55,15 @@ class LoginForm extends Component {
           this.props.onlogged();
         } else {
           if (result.message === 'wrong password') {
-            message.error('密码错误，请重新输入！')
+            message.error('密码错误，请重新输入！');
+            this.setState({
+              user_pass: ''
+            });
           } else if (result.message === 'user not found') {
-            message.error('未找到该用户！')
+            message.error('未找到该用户！');
+            this.setState({
+              user_name: ''
+            });
           }
         }
       });
@@ -103,6 +109,7 @@ class LoginForm extends Component {
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }}/>}
               placeholder="用户名"
               type={'text'}
+              value={this.state.user_name}
               onInput={this.changeUserName}
               style={{
                 width: '100%'
