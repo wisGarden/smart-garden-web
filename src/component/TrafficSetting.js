@@ -9,6 +9,7 @@ import {
   Collapse,
   Input, Row, Col, Icon, message, Tooltip
 } from 'antd';
+import api from '../service/api';
 
 
 //TODO 在上传文件时要先确认有没有设置文件上传路径
@@ -22,10 +23,43 @@ function callback(key) {
 
 class TrafficSetting extends Component {
   state = {
-    file_path: '/document/video/',
-    is_edit_file_path: true,
-    api_key: 'smart-garden',
+    upload_dir: '',
+    is_edit_upload_dir: true,
+    api_key: '',
     is_edit_api_key: true
+  };
+
+  componentDidMount() {
+    api.getSetting('api_key', res => {
+      const result = res.data;
+      if (result.success === 'true') {
+        this.setState({
+          api_key: result.set_value
+        });
+      }
+    });
+    api.getSetting('upload_dir', res => {
+      const result = res.data;
+      if (result.success === 'true') {
+        this.setState({
+          upload_dir: result.set_value
+        });
+      }
+    });
+  }
+
+  updateSetting = (set_key, message) => {
+    api.updateSetting({
+      set_key,
+      set_value: this.state[set_key],
+    }, res => {
+      const result = res.data;
+      if (result.success === 'true') {
+        message.success(message);
+      } else {
+        message.error('网络错误，请稍候再试！');
+      }
+    })
   };
 
   render() {
@@ -52,78 +86,95 @@ class TrafficSetting extends Component {
           </TabPane>
         ) : null}
         <TabPane tab="服务配置" key="systemSetting">
-          <Collapse bordered={false}>
-            <Panel header="录像上传路径" key="file_path">
-              <Row>
-                <Col span={4} offset={1}>
-                  <Input disabled={this.state.is_edit_file_path} value={this.state.file_path} placeholder={'请输入文件上传路径'}
-                         onChange={e => {
-                           this.setState({
-                             file_path: e.target.value
-                           });
-                         }}/>
-                </Col>
-                <Col span={1} style={{
-                  lineHeight: '32px',
-                  marginLeft: '15px'
-                }}>
-                  {this.state.is_edit_file_path ?
-                    <Tooltip title={'编辑'}>
-                      <Icon onClick={_ => {
-                        this.setState({
-                          is_edit_file_path: false
-                        });
-                      }} className={'icon-hover'} type={'edit'}/>
-                    </Tooltip> :
-                    <Tooltip title={'完成'}>
-                      <Icon onClick={_ => {
-                        this.setState({
-                          is_edit_file_path: true
-                        }, () => {
-                          message.success('文件上传路径修改成功！');
-                        });
-                      }} className={'icon-hover'} type={'check'}/>
-                    </Tooltip>
-                  }
-                </Col>
-              </Row>
-            </Panel>
-            <Panel header="接口调用密钥" key="api_key">
-              <Row>
-                <Col span={4} offset={1}>
-                  <Input disabled={this.state.is_edit_api_key} value={this.state.api_key} placeholder={'请输入接口调用密钥'}
-                         onChange={e => {
-                           this.setState({
-                             api_key: e.target.value
-                           });
-                         }}/>
-                </Col>
-                <Col span={1} style={{
-                  lineHeight: '32px',
-                  marginLeft: '15px'
-                }}>
-                  {this.state.is_edit_api_key ?
-                    <Tooltip title={'编辑'}>
-                      <Icon onClick={_ => {
-                        this.setState({
-                          is_edit_api_key: false
-                        });
-                      }} className={'icon-hover'} type={'edit'}/>
-                    </Tooltip> :
-                    <Tooltip title={'完成'}>
-                      <Icon onClick={_ => {
-                        this.setState({
-                          is_edit_api_key: true
-                        }, () => {
-                          message.success('接口调用密钥修改成功！');
-                        });
-                      }} className={'icon-hover'} type={'check'}/>
-                    </Tooltip>
-                  }
-                </Col>
-              </Row>
-            </Panel>
-          </Collapse>
+          <iframe
+            style={{}}
+            title="setting"
+            allowFullScreen="true"
+            width="100%"
+            height="600px"
+            scrolling="no"
+            src="http://10.211.55.6:10080/admin/panel.html?page=ums_config.html"
+            frameBorder="0"
+          />
+          {/*<Collapse bordered={false}>*/}
+          {/*<Panel header="录像上传路径" key="upload_dir">*/}
+          {/*<Row>*/}
+          {/*<Col span={4} offset={1}>*/}
+          {/*<Input*/}
+          {/*disabled={this.state.is_edit_upload_dir}*/}
+          {/*value={this.state.upload_dir}*/}
+          {/*placeholder={'请输入文件上传路径'}*/}
+          {/*onChange={e => {*/}
+          {/*this.setState({*/}
+          {/*upload_dir: e.target.value*/}
+          {/*}, () => {*/}
+          {/*});*/}
+          {/*}}/>*/}
+          {/*</Col>*/}
+          {/*<Col span={1} style={{*/}
+          {/*lineHeight: '32px',*/}
+          {/*marginLeft: '15px'*/}
+          {/*}}>*/}
+          {/*{this.state.is_edit_upload_dir ?*/}
+          {/*<Tooltip title={'编辑'}>*/}
+          {/*<Icon onClick={_ => {*/}
+          {/*this.setState({*/}
+          {/*is_edit_upload_dir: false*/}
+          {/*});*/}
+          {/*}} className={'icon-hover'} type={'edit'}/>*/}
+          {/*</Tooltip> :*/}
+          {/*<Tooltip title={'完成'}>*/}
+          {/*<Icon onClick={_ => {*/}
+          {/*this.setState({*/}
+          {/*is_edit_upload_dir: true*/}
+          {/*}, () => {*/}
+          {/*this.updateSetting('upload_dir', '文件上传路径修改成功！');*/}
+          {/*});*/}
+          {/*}} className={'icon-hover'} type={'check'}/>*/}
+          {/*</Tooltip>*/}
+          {/*}*/}
+          {/*</Col>*/}
+          {/*</Row>*/}
+          {/*</Panel>*/}
+          {/*<Panel header="接口调用密钥" key="api_key">*/}
+          {/*<Row>*/}
+          {/*<Col span={4} offset={1}>*/}
+          {/*<Input*/}
+          {/*disabled={this.state.is_edit_api_key}*/}
+          {/*value={this.state.api_key}*/}
+          {/*placeholder={'请输入接口调用密钥'}*/}
+          {/*onChange={e => {*/}
+          {/*this.setState({*/}
+          {/*api_key: e.target.value*/}
+          {/*});*/}
+          {/*}}/>*/}
+          {/*</Col>*/}
+          {/*<Col span={1} style={{*/}
+          {/*lineHeight: '32px',*/}
+          {/*marginLeft: '15px'*/}
+          {/*}}>*/}
+          {/*{this.state.is_edit_api_key ?*/}
+          {/*<Tooltip title={'编辑'}>*/}
+          {/*<Icon onClick={_ => {*/}
+          {/*this.setState({*/}
+          {/*is_edit_api_key: false*/}
+          {/*});*/}
+          {/*}} className={'icon-hover'} type={'edit'}/>*/}
+          {/*</Tooltip> :*/}
+          {/*<Tooltip title={'完成'}>*/}
+          {/*<Icon onClick={_ => {*/}
+          {/*this.setState({*/}
+          {/*is_edit_api_key: true*/}
+          {/*}, () => {*/}
+          {/*this.updateSetting('api_key', '接口调用密钥修改成功！');*/}
+          {/*});*/}
+          {/*}} className={'icon-hover'} type={'check'}/>*/}
+          {/*</Tooltip>*/}
+          {/*}*/}
+          {/*</Col>*/}
+          {/*</Row>*/}
+          {/*</Panel>*/}
+          {/*</Collapse>*/}
         </TabPane>
       </Tabs>
     );

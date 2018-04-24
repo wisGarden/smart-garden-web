@@ -101,6 +101,45 @@ function authUser(userObj, callback) {
     })
 }
 
+function getSetting(set_key, callback) {
+  const setting = new FormData();
+  setting.append('set_key', set_key);
+  axios.post(`${config.apiUrl}/setting/get/`, setting, headers)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
+function updateSetting(settingObj, callback) {
+  const setting = new FormData();
+  setting.append('set_key', settingObj.set_key);
+  setting.append('set_value', settingObj.set_value);
+  axios.post(`${config.apiUrl}/setting/update/`, setting, headers)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
+function uploadVideoFile(fileObj, callback) {
+  const file = new FormData();
+  file.append('file_info', JSON.stringify(fileObj));
+  axios.post(`${config.apiUrl}/video/insert/`, file, headers)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
+function getSites(callback) {
+  axios.get(`${config.apiUrl}/video/getSites/`)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
 export default {
   login,
   isLogged,
@@ -111,4 +150,8 @@ export default {
   resetUserPass,
   deleteUser,
   authUser,
+  getSetting,
+  updateSetting,
+  uploadVideoFile,
+  getSites,
 }

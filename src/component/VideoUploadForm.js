@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import {
-  Form, Select, Button, Upload, Icon, DatePicker, Radio, Input
+  Form, Select, Button, Upload, Icon, DatePicker, Radio, Input, message
 } from 'antd';
+import axios from 'axios';
+import api from '../service/api';
 
 const { RadioGroup } = Radio;
 
@@ -13,15 +15,56 @@ class VideoUploadItemForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isTrafficLimitShow: false
+      isTrafficLimitShow: false,
+      isFileUploaded: false,
+      isAnalyseTypeDecided: false,
+      file_uuid: '', // 文件uuid
+      file_name: '', // 文件名
+      file_path: '', // 文件路径
+      file_type: '', // 文件类型
+      file_size: 0, // 文件大小
+      file_extend: '', // 文件拓展名
+      file_site: '', // 文件的地点
+      file_during_time: '', // 文件的时间
+      analyse_type: '', // 文件的分析类型
+      traffic_density_limit: 0, // 地点客流密度上限
+      all_sites: [],
     };
   }
 
-  handleVideoUploadSubmit = (e) => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
+  componentDidMount() {
+    api.getSites(res => {
+      if (res.data.success === 'true') {
+        const all_sites = res.data.message;
+        this.setState({
+          all_sites,
+        });
+      }
+    });
+  }
+
+  handleDuringTime = time => {
+    const start_time = time[0]._d;
+    const end_time = time[1]._d;
+    const file_during_time = `${start_time.getTime()}-${end_time.getTime()}`;
+    this.setState({
+      file_during_time,
+    });
+  };
+
+  handleVideoSite = file_site => {
+    this.setState({
+      file_site,
+    }, () => {
+      const all_sites_name = this.state.all_sites.map(site => site.site_name);
+      if (all_sites_name.includes(this.state.file_site)) {
+        this.setState({
+          isAnalyseTypeDecided: true
+        });
+      } else {
+        this.setState({
+          isAnalyseTypeDecided: false
+        });
       }
     });
   };
@@ -29,22 +72,81 @@ class VideoUploadItemForm extends Component {
   handleAnalyseType = (type) => {
     if (type === 'fixed-position') {
       this.setState({
-        isTrafficLimitShow: false
+        isTrafficLimitShow: false,
+        analyse_type: type
       });
     }
     if (type === 'fixed-area') {
       this.setState({
-        isTrafficLimitShow: true
+        isTrafficLimitShow: true,
+        analyse_type: type
       });
     }
   };
 
-  normFile = (e) => {
-    console.log('Upload event:', e);
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e && e.fileList;
+  handleDensityLimit = e => {
+    this.setState({
+      traffic_density_limit: parseInt(e.target.value)
+    });
+  };
+
+  uploadFile = (e) => {
+    const files = e.file;
+    const video = new FormData();
+    video.append('name', files);
+    axios.post(`http://10.211.55.6:10080/api/upload`, video, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    }).then(res => {
+      const fileInfo = res.data.files[0];
+      this.setState({
+        file_uuid: fileInfo.name.split('.')[0],
+        file_extend: fileInfo.name.split('.')[1],
+        file_path: fileInfo.name,
+        file_name: fileInfo.originalName,
+        file_type: fileInfo.type,
+        file_size: fileInfo.size,
+        isFileUploaded: true
+      });
+    }).catch(error => {
+      throw error
+    });
+  };
+
+  handleVideoUploadSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log(this.state);
+        if (this.state.isFileUploaded) {
+          const { file_uuid, file_name, file_path, file_type, file_size, file_extend, file_site, file_during_time, analyse_type, traffic_density_limit } = this.state;
+          const fileObj = {
+            file_uuid,
+            file_name,
+            file_path,
+            file_type,
+            file_size,
+            file_extend,
+            file_site,
+            file_during_time,
+            analyse_type,
+            traffic_density_limit
+          };
+          api.uploadVideoFile(fileObj, res => {
+            console.log(res.data);
+            if (res.data.success === 'true') {
+              message.success('上传成功！', () => {
+                window.location.reload();
+              });
+            }
+          })
+        } else {
+          message.error('请上传视频文件');
+          return null;
+        }
+      }
+    });
   };
 
   render() {
@@ -62,24 +164,18 @@ class VideoUploadItemForm extends Component {
           label="选择文件"
         >
           <div className="dropbox">
-            {getFieldDecorator('dragger', {
-              valuePropName: 'fileList',
-              getValueFromEvent: this.normFile,
-              rules: [{
-                required: true,
-                message: '请选择要上传的监控录像！'
-              }]
-            })(
-              <Upload.Dragger name="files">
-                <p className="ant-upload-drag-icon" style={{
-                  paddingTop: '13px'
-                }}>
-                  <Icon type="inbox"/>
-                </p>
-                <p className="ant-upload-text">点击或拖拽视频文件到此处上传</p>
-                <p className="ant-upload-hint">支持多选</p>
-              </Upload.Dragger>
-            )}
+            <Upload.Dragger
+              name="files"
+              customRequest={this.uploadFile}
+            >
+              <p className="ant-upload-drag-icon" style={{
+                paddingTop: '13px'
+              }}>
+                <Icon type="inbox"/>
+              </p>
+              <p className="ant-upload-text">点击或拖拽视频文件到此处上传</p>
+              <p className="ant-upload-hint">支持多选</p>
+            </Upload.Dragger>
           </div>
         </FormItem>
 
@@ -89,21 +185,23 @@ class VideoUploadItemForm extends Component {
           label="录像地点"
           hasFeedback
         >
-          {getFieldDecorator('select', {
+          {getFieldDecorator('file_site', {
             rules: [{
               required: true,
-              message: '请选择监控录像的地点！'
+              message: '请选择监控录像的地点'
             }],
           })(
             <Select
               mode="combobox"
               placeholder='请选择或直接输入新的监控录像地点'
               // size={'default'}
-              // onChange={handleChange}
+              onChange={this.handleVideoSite}
             >
-              <Option value='图书馆'>图书馆</Option>
-              <Option value='银杏大道'>银杏大道</Option>
-              <Option value='二食堂'>二食堂</Option>
+              {
+                this.state.all_sites.map((site, index) =>
+                  (<Option key={index} value={site.site_name}>{site.site_name}</Option>)
+                )
+              }
             </Select>
           )}
         </FormItem>
@@ -113,39 +211,63 @@ class VideoUploadItemForm extends Component {
           {...formItemLayout}
           label="录像时间"
         >
-          {getFieldDecorator('range-time-picker', {
-            rules: [{ type: 'array', required: true, message: '请填写监控录像的具体时间间隔!' }],
+          {getFieldDecorator('file_during_time', {
+            rules: [{ type: 'array', required: true, message: '请填写监控录像的具体时间间隔' }],
           })(
-            <RangePicker showTime format="YYYY-MM-DD HH:mm"/>
+            <RangePicker
+              showTime
+              format="YYYY-MM-DD HH:mm"
+              onChange={this.handleDuringTime}
+            />
           )}
         </FormItem>
 
         {/*客流分析类型*/}
-        <FormItem
-          {...formItemLayout}
-          label="选择客流分析类型"
-        >
-          {getFieldDecorator('radio-group')(
-            <div>
-              <input onChange={e => {
-                this.handleAnalyseType('fixed-position');
-              }} value={'fixed-position'} className={'radio-choose-date-gap'} type="radio" id={'fixed-position'}
-                     name={'analyse-type'}/><label
-              htmlFor="fixed-position">定点客流量分析</label>
+        {!this.state.isAnalyseTypeDecided ?
+          <FormItem
+            {...formItemLayout}
+            label="选择客流分析类型"
+          >
+            {getFieldDecorator('analyse_type', {
+              rules: [{ required: true, message: '请选择客流分析类型' }],
+            })(
+              <div>
+                <input
+                  onChange={_ => {
+                    this.handleAnalyseType('fixed-position');
+                  }}
+                  value={'fixed-position'}
+                  className={'radio-choose-date-gap'}
+                  type="radio"
+                  id={'fixed-position'}
+                  name={'analyse-type'}
+                />
+                <label htmlFor="fixed-position">定点客流量分析</label>
 
-              <input onChange={e => {
-                this.handleAnalyseType('fixed-area');
-              }} value={'fixed-area'} className={'radio-choose-date-gap'} type="radio" id={'fixed-area'}
-                     name={'analyse-type'}/><label
-              htmlFor="fixed-area">定区域客流密度分析</label>
-              {this.state.isTrafficLimitShow ?
-                <Input style={{
-                  marginLeft: '10px',
-                  verticalAlign: 'middle'
-                }} placeholder="请输入该区域人数报警上限"/> : null}
-            </div>
-          )}
-        </FormItem>
+                <input
+                  onChange={_ => {
+                    this.handleAnalyseType('fixed-area');
+                  }}
+                  value={'fixed-area'}
+                  className={'radio-choose-date-gap'}
+                  type="radio"
+                  id={'fixed-area'}
+                  name={'analyse-type'}
+                />
+                <label htmlFor="fixed-area">定区域客流密度分析</label>
+
+                {this.state.isTrafficLimitShow ?
+                  <Input
+                    style={{
+                      marginLeft: '10px',
+                      verticalAlign: 'middle'
+                    }}
+                    placeholder="请输入该区域人数报警上限"
+                    onChange={this.handleDensityLimit}
+                  /> : null}
+              </div>
+            )}
+          </FormItem> : null}
 
         {/*上传*/}
         <FormItem

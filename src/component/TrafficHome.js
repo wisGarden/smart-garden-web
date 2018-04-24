@@ -84,7 +84,10 @@ class TrafficHome extends Component {
           <CHeader/>
         </Header>
         <Layout>
-          <Sider width={200} style={{ background: '#fff' }}>
+          <Sider width={200} style={{
+            background: '#fff',
+            height: '650px'
+          }}>
             <Menu
               mode="inline"
               // defaultSelectedKeys={['0']}
@@ -141,8 +144,11 @@ class TrafficHome extends Component {
               </Menu.Item>
             </Menu>
           </Sider>
-          <Layout style={{ padding: '0 24px 24px' }}>
-            <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
+          <Layout style={{
+            padding: '0 24px 24px',
+            height: '650px'
+          }}>
+            <Content style={{ background: '#fff', padding: 24, margin: 0, }}>
               {ContentRender(this.state.menuItem)}
               {/*<TrafficStatistics/>*/}
             </Content>
