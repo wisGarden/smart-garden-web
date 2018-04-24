@@ -140,6 +140,14 @@ function getSites(callback) {
     })
 }
 
+function getAllVideoFiles(callback) {
+  axios.get(`http://localhost:8000/video/videoList/`)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
 export default {
   login,
   isLogged,
@@ -154,4 +162,5 @@ export default {
   updateSetting,
   uploadVideoFile,
   getSites,
+  getAllVideoFiles,
 }
