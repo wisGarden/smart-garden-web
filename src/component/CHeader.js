@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Avatar, Dropdown, Menu, Row, Col, message} from 'antd';
 import '../style/main.css';
 import api from '../service/api'
+import {Link} from 'react-router-dom';
 
 class CHeader extends Component {
   constructor(props) {
@@ -51,15 +52,20 @@ class CHeader extends Component {
           height: '100px',
           padding: '12px 0'
         }}>
-          <p style={{
-            lineHeight: '1.8em',
-            fontSize: '1.8em',
-            marginBottom: '5px'
-          }}>智慧园林客流监测系统</p>
-          <p style={{
-            lineHeight: '1.2em',
-            fontSize: '1.2em'
-          }}>客流分析与监控</p>
+          <Link
+            className='title-link'
+            to={'/home/'}
+          >
+            <p style={{
+              lineHeight: '1.8em',
+              fontSize: '1.8em',
+              marginBottom: '5px'
+            }}>智慧园林客流监测系统</p>
+            <p style={{
+              lineHeight: '1.2em',
+              fontSize: '1.2em'
+            }}>客流分析与监控</p>
+          </Link>
         </Col>
         {
           this.state.isLogged && (

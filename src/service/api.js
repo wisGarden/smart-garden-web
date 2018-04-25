@@ -141,7 +141,17 @@ function getSites(callback) {
 }
 
 function getAllVideoFiles(callback) {
-  axios.get(`http://localhost:8000/video/videoList/`)
+  axios.get(`${config.apiUrl}/video/videoList/`)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
+function deleteVideoFile(file_uuid, callback) {
+  const file = new FormData();
+  file.append('file_uuid', file_uuid);
+  axios.post(`${config.apiUrl}/video/delete/`, file, headers)
     .then(callback)
     .catch(error => {
       throw error;
@@ -163,4 +173,5 @@ export default {
   uploadVideoFile,
   getSites,
   getAllVideoFiles,
+  deleteVideoFile,
 }

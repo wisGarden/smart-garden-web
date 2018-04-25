@@ -52,3 +52,23 @@
 .icon-hover:hover {
     cursor: pointer;
 }
+
+.title-link {
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.title-link:hover {
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.title-link:active {
+    text-decoration: none;
+}
+
+.title-link:link {
+    text-decoration: none;
+}
+
+.title-link:visited {
+    text-decoration: none;
+}

@@ -7,6 +7,7 @@ import EasyDSS from './EasyDSS';
 import FixedPositionVideoList from './FixedPositionVideoList';
 import FixedAreaVideoList from './FixedAreaVideoList';
 import VideoUpload from './VideoUpload';
+import VideoFileList from './VideoFileList';
 import TrafficSetting from './TrafficSetting';
 import FixedPositionTrafficData from './FixedPositionTrafficData';
 import FixedAreaTrafficData from './FixedAreaTrafficData';
@@ -23,7 +24,6 @@ class TrafficHome extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      spots: ['图书馆', '银杏大道', '二食堂'],
       menuItem: '',
       collapsed: true
     };
@@ -43,10 +43,6 @@ class TrafficHome extends Component {
   };
 
   render() {
-    const SpotLists = this.state.spots.map((spot, index) => {
-      return <Menu.Item key={`list-${index}`}>{spot}</Menu.Item>;
-    });
-
     const ContentRender = (menu) => {
       // if (menu.substr(0, 4) === 'list') {
       //   return <FixedPositionVideoList/>
@@ -62,6 +58,7 @@ class TrafficHome extends Component {
       // }
       return (
         <Switch>
+          <Route exact path='/home/' component={VideoFileList}/>
           <Route exact path='/home/fixed-pos/' component={FixedPositionVideoList}/>
           <Route exact path='/home/fixed-area/' component={FixedAreaVideoList}/>
           <Route path='/home/fixed-pos/analyse' component={FixedPositionTrafficData}/>
@@ -96,11 +93,11 @@ class TrafficHome extends Component {
               onClick={this.handleMenuClick}
               inlineCollapsed={this.state.collapsed}
             >
-              <SubMenu onTitleClick={this.handleMenuClick} key="list"
-                       title={<span><Icon type="play-circle-o"/>
-                         录像列表
-                       </span>}>
-                {/*{SpotLists}*/}
+              <SubMenu
+                onTitleClick={this.handleMenuClick}
+                key="list"
+                title={<span><Icon type="play-circle-o"/>录像列表</span>}
+              >
                 <Menu.Item key={'fixed-position'}>
                   <Link style={{
                     color: 'rgba(0,0,0,0.65)'

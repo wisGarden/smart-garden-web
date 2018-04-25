@@ -3,6 +3,7 @@ import {Card, Col, Row, Select, Spin} from 'antd';
 import {Link} from 'react-router-dom';
 import '../style/main.css';
 import api from '../service/api';
+import utils from '../service/utils';
 
 const Option = Select.Option;
 
@@ -35,25 +36,6 @@ class FixedPositionVideoList extends Component {
       });
     });
   }
-
-  handleDuringTime = timeString => {
-    let [start_time, end_time] = timeString.split('-');
-    start_time = new Date(parseInt(start_time));
-    end_time = new Date(parseInt(end_time));
-    return {
-      start_time: start_time.toLocaleString(),
-      end_time: end_time.toLocaleString(),
-      gap: end_time - start_time
-    }
-  };
-
-  handleTimeFormat = mss => {
-    const days = parseInt(mss / (1000 * 60 * 60 * 24));
-    const hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = (mss % (1000 * 60)) / 1000;
-    return days + "天 " + hours + "小时 " + minutes + "分钟 " + seconds + "秒 ";
-  };
 
   handleSiteFilter = sites => {
     if (sites.length === 0) {
@@ -97,47 +79,50 @@ class FixedPositionVideoList extends Component {
           </Row>) : (
             <Row gutter={16}>
               {
-                this.state.fixed_pos_video_files_show.map((file, index) => (
-                  <Col span={6} key={index} style={{
-                    marginBottom: '20px'
-                  }}>
-                    <Link to={{
-                      pathname: `/home/fixed-pos/analyse`,
-                      hash: file.file_uuid,
-                      state: {
-                        file_path: file.file_path
-                      }
+                this.state.fixed_pos_video_files_show.length === 0 ? (<p style={{ textAlign: 'center' }}>暂无视频文件</p>) : (
+                  this.state.fixed_pos_video_files_show.map((file, index) => (
+                    <Col span={6} key={index} style={{
+                      marginBottom: '20px'
                     }}>
-                      <Card
-                        className='video-list-card'
-                        bordered={false}
-                        bodyStyle={{
-                          padding: '5px'
-                        }}
-                        onClick={e => {
-                          localStorage.setItem('file_path', file.file_path);
-                        }}
-                      >
-                        <img src={file.url_snap} alt="" style={{
-                          width: '100%'
-                        }}/>
-                        <div style={{
-                          textAlign: 'center'
-                        }}>
-                          <p style={{
-                            fontWeight: 'bold',
-                            margin: '5px 0',
-                            fontSize: '1.1em',
-                          }}>{file.file_site}</p>
-                          <p style={{
-                            marginBottom: '5px'
-                          }}>{this.handleDuringTime(file.during_time).start_time}</p>
-                          <p>{this.handleTimeFormat(this.handleDuringTime(file.during_time).gap)}</p>
-                        </div>
-                      </Card>
-                    </Link>
-                  </Col>
-                ))}
+                      <Link to={{
+                        pathname: `/home/fixed-pos/analyse`,
+                        hash: file.file_uuid,
+                        state: {
+                          file_path: file.file_path
+                        }
+                      }}>
+                        <Card
+                          className='video-list-card'
+                          bordered={false}
+                          bodyStyle={{
+                            padding: '5px'
+                          }}
+                          onClick={e => {
+                            localStorage.setItem('file_path', file.file_path);
+                          }}
+                        >
+                          <img src={file.url_snap} alt="" style={{
+                            width: '100%'
+                          }}/>
+                          <div style={{
+                            textAlign: 'center'
+                          }}>
+                            <p style={{
+                              fontWeight: 'bold',
+                              margin: '5px 0',
+                              fontSize: '1.1em',
+                            }}>{file.file_site}</p>
+                            <p style={{
+                              marginBottom: '5px'
+                            }}>{utils.handleDuringTime(file.during_time).start_time}</p>
+                            <p>{utils.handleTimeFormat(utils.handleDuringTime(file.during_time).gap)}</p>
+                          </div>
+                        </Card>
+                      </Link>
+                    </Col>
+                  ))
+                )
+              }
             </Row>)
         }
       </div>
