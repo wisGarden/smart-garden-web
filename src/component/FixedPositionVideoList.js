@@ -94,41 +94,51 @@ class FixedPositionVideoList extends Component {
             }}>
               <Spin size="large"/>
             </Col>
-          </Row>) : (<Row gutter={16}>
-            {
-              this.state.fixed_pos_video_files_show.map((file, index) => (
-                <Col span={6} key={index} style={{
-                  marginBottom: '20px'
-                }}>
-                  <Link to={'/home/fixed-pos/yinxingdadao'}>
-                    <Card
-                      className='video-list-card'
-                      bordered={false}
-                      bodyStyle={{
-                        padding: '5px'
-                      }}
-                    >
-                      <img src={file.url_snap} alt="" style={{
-                        width: '100%'
-                      }}/>
-                      <div style={{
-                        textAlign: 'center'
-                      }}>
-                        <p style={{
-                          fontWeight: 'bold',
-                          margin: '5px 0',
-                          fontSize: '1.1em',
-                        }}>{file.file_site}</p>
-                        <p style={{
-                          marginBottom: '5px'
-                        }}>{this.handleDuringTime(file.during_time).start_time}</p>
-                        <p>{this.handleTimeFormat(this.handleDuringTime(file.during_time).gap)}</p>
-                      </div>
-                    </Card>
-                  </Link>
-                </Col>
-              ))}
-          </Row>)
+          </Row>) : (
+            <Row gutter={16}>
+              {
+                this.state.fixed_pos_video_files_show.map((file, index) => (
+                  <Col span={6} key={index} style={{
+                    marginBottom: '20px'
+                  }}>
+                    <Link to={{
+                      pathname: `/home/fixed-pos/analyse`,
+                      hash: file.file_uuid,
+                      state: {
+                        file_path: file.file_path
+                      }
+                    }}>
+                      <Card
+                        className='video-list-card'
+                        bordered={false}
+                        bodyStyle={{
+                          padding: '5px'
+                        }}
+                        onClick={e => {
+                          localStorage.setItem('file_path', file.file_path);
+                        }}
+                      >
+                        <img src={file.url_snap} alt="" style={{
+                          width: '100%'
+                        }}/>
+                        <div style={{
+                          textAlign: 'center'
+                        }}>
+                          <p style={{
+                            fontWeight: 'bold',
+                            margin: '5px 0',
+                            fontSize: '1.1em',
+                          }}>{file.file_site}</p>
+                          <p style={{
+                            marginBottom: '5px'
+                          }}>{this.handleDuringTime(file.during_time).start_time}</p>
+                          <p>{this.handleTimeFormat(this.handleDuringTime(file.during_time).gap)}</p>
+                        </div>
+                      </Card>
+                    </Link>
+                  </Col>
+                ))}
+            </Row>)
         }
       </div>
     );

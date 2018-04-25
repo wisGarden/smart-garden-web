@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {Row, Col, Card, Tooltip, Tabs, DatePicker, Button} from 'antd';
 import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
-import '../style/main.css'
+import '../style/main.css';
+import websocket from '../service/webSocketCof';
 
 const { RangePicker } = DatePicker;
 
@@ -21,59 +22,67 @@ class FixedPositionTrafficData extends Component {
     imgSrc: ''
   };
 
-  fixedSocket = new WebSocket(
-    'ws://localhost:8000/ws/fixedPos/demo/');
-
   constructor(props) {
     super(props);
   }
 
   componentDidMount() {
     console.log('i am mount, Fixed position');
-    console.log(this.state.isSocketOpen);
-    this.fixedSocket.onmessage = (e) => {
-      const transdata = JSON.parse(e.data);
-      const passenger_data = transdata['passenger_data'];
-      data.push({
-        name: '',
-        traffic_data: passenger_data
-      });
-      this.setState({
-        presentTrafficData: passenger_data
-      });
-    };
-    this.fixedSocket.onclose = (e) => {
-      this.setState({
-        isSocketOpen: false
-      });
-      console.log('The fixed pos socket is closed');
-    };
-    this.fixedSocket.onopen = (e) => {
-      this.setState({
-        isSocketOpen: true
-      }, () => {
-        console.log(this.state.isSocketOpen);
-        this.fixedSocket.send(JSON.stringify({ 'file_path': 'demo-slow.mp4' }));
-      });
-    };
-    this.setState({
-      imgSrc: 'http://localhost:8000/fixed/video_feed/'
+    websocket.wsPosConfig({
+      file_uuid: this.props.location.hash.substr(1),
+      onmessage: this.handleSocketOnMessage,
+      onopen: this.handleSocketOnOpen,
+      onclose: this.handleSocketOnClose,
+      send: JSON.stringify({ 'file_path': localStorage.getItem('file_path') })
     });
-  }
-
-  componentWillUnmount() {
-    console.log('i will unmount');
     this.setState({
-      imgSrc: ''
+      imgSrc: `http://localhost:8000/fixedPos/video_feed/${localStorage.getItem('file_path')}/`
     });
   }
 
   shouldComponentUpdate() {
     if (this.state.isSocketOpen) {
       console.log('i am in shouldComponent ');
-      console.log(this.state.isSocketOpen);
     }
     return true;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.location !== this.props.location) {
+      console.log('navigated!');
+    }
+  }
+
+  handleSocketOnMessage = (e) => {
+    const transdata = JSON.parse(e.data);
+    const passenger_data = transdata['passenger_data'];
+    data.push({
+      name: '',
+      traffic_data: passenger_data
+    });
+    this.setState({
+      presentTrafficData: passenger_data
+    });
+  };
+
+  handleSocketOnOpen = (e) => {
+    this.setState({
+      isSocketOpen: true
+    });
+  };
+
+  handleSocketOnClose = (e) => {
+    this.setState({
+      isSocketOpen: false
+    });
+    console.log('The fixed pos socket is closed');
+  };
+
+  componentWillUnmount() {
+    console.log('i will unmount');
+    this.setState({
+      imgSrc: ''
+    });
   }
 
   render() {

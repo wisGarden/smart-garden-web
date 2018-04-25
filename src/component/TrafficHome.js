@@ -64,7 +64,7 @@ class TrafficHome extends Component {
         <Switch>
           <Route exact path='/home/fixed-pos/' component={FixedPositionVideoList}/>
           <Route exact path='/home/fixed-area/' component={FixedAreaVideoList}/>
-          <Route path='/home/fixed-pos/yinxingdadao' component={FixedPositionTrafficData}/>
+          <Route path='/home/fixed-pos/analyse' component={FixedPositionTrafficData}/>
           <Route path='/home/fixed-area/yinxingdadao' component={FixedAreaTrafficData}/>
           <Route path='/home/setting' component={TrafficSetting}/>
           <Route path='/home/upload' component={VideoUpload}/>
