@@ -158,6 +158,18 @@ function deleteVideoFile(file_uuid, callback) {
     })
 }
 
+function updateFileName(fileObj, callback) {
+  const { file_uuid, file_name } = fileObj;
+  const file = new FormData();
+  file.append('file_uuid', file_uuid);
+  file.append('file_name', file_name);
+  axios.post(`${config.apiUrl}/video/update/`, file, headers)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
 export default {
   login,
   isLogged,
@@ -174,4 +186,5 @@ export default {
   getSites,
   getAllVideoFiles,
   deleteVideoFile,
+  updateFileName,
 }
