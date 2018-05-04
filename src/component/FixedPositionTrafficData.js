@@ -19,7 +19,9 @@ class FixedPositionTrafficData extends Component {
     isRangePickerShow: false,
     isSocketOpen: false,
     presentTrafficData: 0,
-    imgSrc: ''
+    imgSrc: '',
+    file_name: '',
+    file_during_time: ''
   };
 
   constructor(props) {
@@ -28,6 +30,17 @@ class FixedPositionTrafficData extends Component {
 
   componentDidMount() {
     console.log('i am mount, Fixed position');
+    // this.setState({
+    //   file_name: this.props.location.state.file_name || localStorage.getItem('file_name'),
+    //   file_during_time: this.props.location.state.file_during_time || localStorage.getItem('file_during_time')
+    // }, () => {
+    //   localStorage.setItem('file_name', this.state.file_name);
+    //   localStorage.setItem('file_during_time', this.state.file_during_time);
+    // });
+    if (!!!localStorage.getItem('file_name') || !!!localStorage.getItem('file_during_time')) {
+      localStorage.setItem('file_name', this.props.location.state.file_name);
+      localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
+    }
     websocket.wsPosConfig({
       file_uuid: this.props.location.hash.substr(1),
       onmessage: this.handleSocketOnMessage,
@@ -128,7 +141,8 @@ class FixedPositionTrafficData extends Component {
           fontWeight: 'bold',
           marginRight: '10px',
           fontSize: '1.2em'
-        }}>银杏大道</span><span>2017-12-11 11:00-12:00</span></p>
+        }}>{localStorage.getItem('file_name')}</span><span>{localStorage.getItem('file_during_time')}</span>
+        </p>
         <Row>
           <Col span={12}>
             {/*<iframe*/}

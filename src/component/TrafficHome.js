@@ -3,7 +3,7 @@ import '../style/main.css';
 import CFooter from './CFooter';
 import CHeader from './CHeader';
 import {Layout, Menu, Icon, message} from 'antd';
-import EasyDSS from './EasyDSS';
+import Vod from './Vod';
 import FixedPositionVideoList from './FixedPositionVideoList';
 import FixedAreaVideoList from './FixedAreaVideoList';
 import VideoUpload from './VideoUpload';
@@ -12,7 +12,7 @@ import TrafficSetting from './TrafficSetting';
 import FixedPositionTrafficData from './FixedPositionTrafficData';
 import FixedAreaTrafficData from './FixedAreaTrafficData';
 import {Route, Switch, Link} from 'react-router-dom';
-import api from '../service/api'
+import api from '../service/api';
 
 
 const { Header, Content, Sider, Footer } = Layout;
@@ -65,7 +65,7 @@ class TrafficHome extends Component {
           <Route path='/home/fixed-area/yinxingdadao' component={FixedAreaTrafficData}/>
           <Route path='/home/setting' component={TrafficSetting}/>
           <Route path='/home/upload' component={VideoUpload}/>
-          <Route path='/home/vod' component={EasyDSS}/>
+          <Route path='/home/vod' component={Vod}/>
         </Switch>
       );
     };
@@ -93,10 +93,18 @@ class TrafficHome extends Component {
               onClick={this.handleMenuClick}
               inlineCollapsed={this.state.collapsed}
             >
+              <Menu.Item key="upload">
+                <Link style={{
+                  color: 'rgba(0,0,0,0.65)'
+                }} to={`/home/upload`}>
+                  <Icon type="upload"/>
+                  <span>录像上传</span>
+                </Link>
+              </Menu.Item>
               <SubMenu
                 onTitleClick={this.handleMenuClick}
                 key="list"
-                title={<span><Icon type="play-circle-o"/>录像列表</span>}
+                title={<span><Icon type="play-circle-o"/>录像分析</span>}
               >
                 <Menu.Item key={'fixed-position'}>
                   <Link style={{
@@ -119,17 +127,10 @@ class TrafficHome extends Component {
                   color: 'rgba(0,0,0,0.65)'
                 }} to={`/home/vod`}>
                   <Icon type="laptop"/>
-                  <span>录像点播</span>
+                  <span>录像回放</span>
                 </Link>
               </Menu.Item>
-              <Menu.Item key="upload">
-                <Link style={{
-                  color: 'rgba(0,0,0,0.65)'
-                }} to={`/home/upload`}>
-                  <Icon type="upload"/>
-                  <span>录像上传</span>
-                </Link>
-              </Menu.Item>
+
               <Menu.Item key="setting">
                 <Link
                   style={{
@@ -148,6 +149,14 @@ class TrafficHome extends Component {
             <Content style={{ background: '#fff', padding: 24, margin: 0, }}>
               {ContentRender(this.state.menuItem)}
               {/*<TrafficStatistics/>*/}
+              {/*<p>{*/}
+              {/*axios.get('http://localhost:8000/fixedPos/streaming/')*/}
+              {/*.then(res => {*/}
+              {/*const result = res.data;*/}
+              {/*console.log(result);*/}
+              {/*return 'hello';*/}
+              {/*})*/}
+              {/*}</p>*/}
             </Content>
           </Layout>
         </Layout>

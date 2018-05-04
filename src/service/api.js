@@ -123,6 +123,7 @@ function updateSetting(settingObj, callback) {
 }
 
 function uploadVideoFile(fileObj, callback) {
+  console.log(fileObj);
   const file = new FormData();
   file.append('file_info', JSON.stringify(fileObj));
   axios.post(`${config.apiUrl}/video/insert/`, file, headers)

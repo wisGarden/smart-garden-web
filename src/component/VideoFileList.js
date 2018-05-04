@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Modal, Avatar, Popconfirm, Table, Button, Input, message} from 'antd';
 import api from '../service/api';
 import utils from '../service/utils';
+import config from '../service/config';
 
 const analyse_type_map = {
   'fixed-position': '定点客流量分析',
@@ -30,7 +31,7 @@ class VideoFileList extends Component {
       key: '1',
       width: 100,
       align: 'center',
-      render: videoFile => (<Avatar size='large' shape='square' src={videoFile.url_snap}/>)
+      render: videoFile => (<Avatar size='large' shape='square' src={config.vodServerUrl + videoFile.url_snap}/>)
     },
     { title: '视频地点', dataIndex: 'file_site', align: 'center', width: 100 },
     { title: '视频名称', dataIndex: 'file_name', align: 'center', width: 100 },
@@ -78,9 +79,7 @@ class VideoFileList extends Component {
       render: videoFile => {
         return (
           <div>
-            <a style={{
-              marginBottom: '10px'
-            }} onClick={() => {
+            <a onClick={() => {
               this.setState({
                 changingFile: videoFile,
                 isChangingName: true

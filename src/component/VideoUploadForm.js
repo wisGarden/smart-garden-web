@@ -5,6 +5,8 @@ import {
 import axios from 'axios';
 import api from '../service/api';
 
+const querystring = require('querystring');
+
 const { RadioGroup } = Radio;
 
 const RangePicker = DatePicker.RangePicker;
@@ -94,20 +96,32 @@ class VideoUploadItemForm extends Component {
     const files = e.file;
     const video = new FormData();
     video.append('name', files);
-    axios.post(`http://10.211.55.6:10080/api/upload`, video, {
+    axios.post(`http://10.211.55.6:10080/vod/upload`, video, {
       headers: {
         'Content-Type': 'multipart/form-data',
       }
     }).then(res => {
-      const fileInfo = res.data.files[0];
+      const file_uuid = res.data[0];
       this.setState({
-        file_uuid: fileInfo.name.split('.')[0],
-        file_extend: fileInfo.name.split('.')[1],
-        file_path: fileInfo.name,
-        file_name: fileInfo.originalName,
-        file_type: fileInfo.type,
-        file_size: fileInfo.size,
-        isFileUploaded: true
+        file_uuid,
+      }, () => {
+        axios.post(`http://10.211.55.6:10080/vod/get`, querystring.stringify({ id: this.state.file_uuid }), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }).then(res => {
+          const fileInfo = res.data;
+          this.setState({
+            file_extend: fileInfo.url.split('.')[1],
+            file_path: fileInfo.url,
+            file_name: fileInfo.name,
+            file_type: fileInfo.type,
+            file_size: fileInfo.size,
+            isFileUploaded: true
+          });
+        }).catch(error => {
+          throw error
+        })
       });
     }).catch(error => {
       throw error
@@ -118,7 +132,6 @@ class VideoUploadItemForm extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(this.state);
         if (this.state.isFileUploaded) {
           const { file_uuid, file_name, file_path, file_type, file_size, file_extend, file_site, file_during_time, analyse_type, traffic_density_limit } = this.state;
           const fileObj = {
@@ -134,10 +147,20 @@ class VideoUploadItemForm extends Component {
             traffic_density_limit
           };
           api.uploadVideoFile(fileObj, res => {
-            console.log(res.data);
             if (res.data.success === 'true') {
-              message.success('上传成功！', () => {
-                window.location.reload();
+              axios.post(`http://10.211.55.6:10080/vod/turn/shared`, querystring.stringify({
+                id: fileObj.file_uuid,
+                shared: true
+              }), {
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                }
+              }).then(res => {
+                message.success('上传成功！', 1, () => {
+                  window.location.reload();
+                });
+              }).catch(error => {
+                throw error;
               });
             }
           })
