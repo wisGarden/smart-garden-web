@@ -2,47 +2,81 @@ import React, {Component} from 'react';
 import {Row, Col, Card, Tooltip, Tabs, DatePicker, Button, notification} from 'antd';
 import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
 import '../style/main.css'
+import websocket from "../service/webSocketCof";
 
 const { RangePicker } = DatePicker;
 
 const { TabPane } = Tabs;
 
 const data = [
-  { name: '1:00', traffic_density: 0 },
-  { name: '2:00', traffic_density: 0 },
-  { name: '3:00', traffic_density: 0 },
-  { name: '4:00', traffic_density: 0 },
-  { name: '5:00', traffic_density: 4 },
-  { name: '6:00', traffic_density: 50 },
-  { name: '7:00', traffic_density: 75 },
-  { name: '8:00', traffic_density: 130 },
-  { name: '9:00', traffic_density: 163 },
-  { name: '10:00', traffic_density: 202 },
-  { name: '11:00', traffic_density: 159 },
-  { name: '12:00', traffic_density: 142 },
-  { name: '13:00', traffic_density: 100 },
-  { name: '14:00', traffic_density: 120 },
-  { name: '15:00', traffic_density: 110 },
-  { name: '16:00', traffic_density: 135 },
-  { name: '17:00', traffic_density: 159 },
-  { name: '18:00', traffic_density: 135 },
+  { name: '1:00', traffic_data: 0 },
 ];
 
 class FixedAreaTrafficData extends Component {
   state = {
     isExportShow: true,
     dateGap: 'byWeek',
-    isRangePickerShow: false
+    isRangePickerShow: false,
+    isSocketOpen: false,
+    presentTrafficData: 0,
+    fileName: '',
+    fileDuringTime: ''
   };
 
-  componentDidMount() {
-    notification.warning({
-      message: '警报',
-      description: '当前区域内人数已超过上限，请及时采取梳理措施，以防发生危险！',
-      duration: null
-    });
-    console.log('i am mount, Fixed position');
+  constructor(props) {
+    super(props);
   }
+
+  componentDidMount() {
+    // notification.warning({
+    //   message: '警报',
+    //   description: '当前区域内人数已超过上限，请及时采取梳理措施，以防发生危险！',
+    //   duration: null
+    // });
+
+    if (!!!localStorage.getItem('file_name') || !!!localStorage.getItem('file_during_time')) {
+      localStorage.setItem('file_name', this.props.location.state.file_name);
+      localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
+    }
+
+    websocket.wsAreaConfig({
+      file_uuid: this.props.location.hash.substr(1),
+      onmessage: this.handleSocketOnMessage,
+      onopen: this.handleSocketOnOpen,
+      onclose: this.handleSocketOnClose,
+      send: JSON.stringify({ 'file_path': localStorage.getItem('file_path') })
+    });
+
+    console.log('i am mount, Fixed position');
+
+  }
+
+  handleSocketOnMessage = (e) => {
+    const transdata = JSON.parse(e.data);
+    const passenger_data = transdata['passenger_data'];
+    data.push({
+      name: '',
+      traffic_data: passenger_data
+    });
+    this.setState({
+      presentTrafficData: passenger_data
+    });
+  };
+
+  handleSocketOnOpen = (e) => {
+    this.setState({
+      isSocketOpen: true
+    });
+    console.log('socket is open');
+  };
+
+  handleSocketOnClose = (e) => {
+    this.setState({
+      isSocketOpen: false
+    });
+    console.log('The fixed area socket is closed');
+  };
+
 
   render() {
 
@@ -87,7 +121,7 @@ class FixedAreaTrafficData extends Component {
           fontWeight: 'bold',
           marginRight: '10px',
           fontSize: '1.2em'
-        }}>外滩东4号</span><span>2018-02-26 18:00-19:40</span></p>
+        }}>{localStorage.getItem('file_name')}</span><span>{localStorage.getItem('file_during_time')}</span></p>
         <Row>
           <Col span={12}>
             {/*<iframe*/}
@@ -115,10 +149,10 @@ class FixedAreaTrafficData extends Component {
               }}>135</p>
               <ResponsiveContainer height={150}>
                 <LineChart
-                  data={data}
+                  data={data.slice(-20)}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <Tooltip/>
-                  <Line type="monotone" dataKey="traffic_density" stroke="#82ca9d"/>
+                  <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
                 </LineChart>
               </ResponsiveContainer>
             </Card>

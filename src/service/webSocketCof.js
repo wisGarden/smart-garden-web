@@ -1,13 +1,23 @@
 import config from './config';
 
-function wsPosConfig(cofObj) {
-  const socket = new WebSocket(`${config.wsUrl}/fixedPos/${cofObj.file_uuid}/`);
-  socket.onmessage = cofObj.onmessage;
-  socket.onclose = cofObj.onclose;
+function wsPosConfig(confObj) {
+  const socket = new WebSocket(`${config.wsUrl}/fixedPos/${confObj.file_uuid}/`);
+  socket.onmessage = confObj.onmessage;
+  socket.onclose = confObj.onclose;
   socket.onopen = e => {
-    cofObj.onopen(e);
-    socket.send(cofObj.send);
+    confObj.onopen(e);
+    socket.send(confObj.send);
   };
 }
 
-export default { wsPosConfig }
+function wsAreaConfig(confObj) {
+  const socket = new WebSocket(`${config.wsUrl}/fixedArea/${confObj.file_uuid}/`);
+  socket.onmessage = confObj.onmessage;
+  socket.onclose = confObj.onclose;
+  socket.onopen = e => {
+    confObj.onopen(e);
+    socket.send(confObj.send);
+  };
+}
+
+export default { wsPosConfig, wsAreaConfig }

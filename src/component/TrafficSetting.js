@@ -4,12 +4,9 @@ import WrappedAuthNewForm from './WrappedAuthNewForm';
 import ProfileUpdateForm from './ProfileUpdateForm';
 import AllUserList from './AllUserList';
 import '../style/main.css';
-import {
-  Tabs,
-  Collapse,
-  Input, Row, Col, Icon, message, Tooltip
-} from 'antd';
+import {Tabs, Collapse} from 'antd';
 import api from '../service/api';
+import config from '../service/config';
 
 
 //TODO 在上传文件时要先确认有没有设置文件上传路径
@@ -93,7 +90,7 @@ class TrafficSetting extends Component {
             width="100%"
             height="600px"
             scrolling="no"
-            src="http://10.211.55.6:10080/admin/panel.html?page=ums_config.html"
+            src={`http://${config.vodServerUrl}/admin/panel.html?page=ums_config.html`}
             frameBorder="0"
           />
           {/*<Collapse bordered={false}>*/}

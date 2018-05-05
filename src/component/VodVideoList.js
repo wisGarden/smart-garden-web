@@ -41,7 +41,6 @@ class VodVideoList extends Component {
   }
 
   handleShowModal = (site, time) => {
-    console.log(site, time);
     this.setState({
       isVideoModalShow: true,
       showModalSite: site,
@@ -109,7 +108,6 @@ class VodVideoList extends Component {
                           padding: '5px'
                         }}
                         onClick={e => {
-                          console.log(file);
                           localStorage.setItem('file_path', file.file_path);
                           localStorage.setItem('file_uuid', file.file_uuid);
                           this.handleShowModal(file.file_site, utils.handleDuringTime(file.during_time).start_time);
@@ -157,7 +155,7 @@ class VodVideoList extends Component {
             title="vod"
             allowFullScreen="true"
             scrolling="no"
-            src={`http://10.211.55.6:10080/share.html?id=${localStorage.getItem('file_uuid')}&type=vod`}
+            src={`${config.vodServerUrl}/share.html?id=${localStorage.getItem('file_uuid')}&type=vod`}
             frameBorder="0"
           />
 

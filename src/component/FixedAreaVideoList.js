@@ -88,7 +88,15 @@ class FixedAreaVideoList extends Component {
                     <Col span={6} key={index} style={{
                       marginBottom: '20px'
                     }}>
-                      <Link to={'/home/fixed-area/yinxingdadao'}>
+                      <Link to={{
+                        pathname: `/home/fixed-area/analyse`,
+                        hash: file.file_uuid,
+                        state: {
+                          file_path: file.file_path,
+                          file_name: file.file_site,
+                          file_during_time: utils.handleDuringTime(file.during_time).start_time
+                        }
+                      }}>
                         <Card
                           className='video-list-card'
                           bordered={false}

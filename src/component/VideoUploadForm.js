@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import axios from 'axios';
 import api from '../service/api';
+import config from '../service/config';
 
 const querystring = require('querystring');
 
@@ -96,7 +97,7 @@ class VideoUploadItemForm extends Component {
     const files = e.file;
     const video = new FormData();
     video.append('name', files);
-    axios.post(`http://10.211.55.6:10080/vod/upload`, video, {
+    axios.post(`${config.vodServerUrl}/vod/upload`, video, {
       headers: {
         'Content-Type': 'multipart/form-data',
       }
@@ -105,7 +106,7 @@ class VideoUploadItemForm extends Component {
       this.setState({
         file_uuid,
       }, () => {
-        axios.post(`http://10.211.55.6:10080/vod/get`, querystring.stringify({ id: this.state.file_uuid }), {
+        axios.post(`${config.vodServerUrl}/vod/get`, querystring.stringify({ id: this.state.file_uuid }), {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
@@ -148,7 +149,7 @@ class VideoUploadItemForm extends Component {
           };
           api.uploadVideoFile(fileObj, res => {
             if (res.data.success === 'true') {
-              axios.post(`http://10.211.55.6:10080/vod/turn/shared`, querystring.stringify({
+              axios.post(`${config.vodServerUrl}/vod/turn/shared`, querystring.stringify({
                 id: fileObj.file_uuid,
                 shared: true
               }), {

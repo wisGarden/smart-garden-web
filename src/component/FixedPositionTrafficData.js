@@ -3,6 +3,7 @@ import {Row, Col, Card, Tooltip, Tabs, DatePicker, Button} from 'antd';
 import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
 import '../style/main.css';
 import websocket from '../service/webSocketCof';
+import config from '../service/config';
 
 const { RangePicker } = DatePicker;
 
@@ -49,7 +50,7 @@ class FixedPositionTrafficData extends Component {
       send: JSON.stringify({ 'file_path': localStorage.getItem('file_path') })
     });
     this.setState({
-      imgSrc: `http://localhost:8000/fixedPos/video_feed/${localStorage.getItem('file_path')}/`
+      imgSrc: `${config.posImgStreamUrl}/fixedPos/video_feed/${localStorage.getItem('file_path')}/`
     });
   }
 

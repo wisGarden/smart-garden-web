@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import VodVideoList from './VodVideoList';
+import axios from 'axios';
 
 class EasyDSS extends Component {
   constructor(props) {
