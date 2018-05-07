@@ -34,10 +34,12 @@ class FixedAreaTrafficData extends Component {
     //   duration: null
     // });
 
-    if (!!!localStorage.getItem('file_name') || !!!localStorage.getItem('file_during_time')) {
-      localStorage.setItem('file_name', this.props.location.state.file_name);
-      localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
-    }
+    // if (!!!localStorage.getItem('file_name') || !!!localStorage.getItem('file_during_time')) {
+    localStorage.setItem('file_name', this.props.location.state.file_name);
+    console.log(localStorage.getItem('file_name'));
+    localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
+    console.log(localStorage.getItem('file_during_time'));
+    // }
 
     websocket.wsAreaConfig({
       file_uuid: this.props.location.hash.substr(1),
