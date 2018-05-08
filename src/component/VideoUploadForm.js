@@ -14,6 +14,11 @@ const RangePicker = DatePicker.RangePicker;
 const FormItem = Form.Item;
 const Option = Select.Option;
 
+const analyse_type = {
+  'fixed-position': '定点客流量分析',
+  'fixed-area': '定区域客流密度分析'
+};
+
 class VideoUploadItemForm extends Component {
   constructor(props) {
     super(props);
@@ -41,6 +46,8 @@ class VideoUploadItemForm extends Component {
         const all_sites = res.data.message;
         this.setState({
           all_sites,
+        }, () => {
+          console.log(this.state.all_sites);
         });
       }
     });
@@ -223,7 +230,13 @@ class VideoUploadItemForm extends Component {
             >
               {
                 this.state.all_sites.map((site, index) =>
-                  (<Option key={index} value={site.site_name}>{site.site_name}</Option>)
+                  (<Option key={index} value={site.site_name}>{site.site_name}
+                    <span
+                      style={{
+                        float: 'right',
+                        fontSize: '.8em',
+                        fontWeight: 'normal'
+                      }}>{analyse_type[site.site_analyse_type]}</span></Option>)
                 )
               }
             </Select>
