@@ -101,9 +101,10 @@ class VideoFileList extends Component {
     },
   ];
 
-  handleChangeFileNameCancel = () => {
+  handleChangeFileNameCancel = (e) => {
     this.setState({
-      isChangingName: false
+      isChangingName: false,
+      new_file_name: ''
     });
   };
 

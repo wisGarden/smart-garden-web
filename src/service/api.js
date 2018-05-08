@@ -172,20 +172,20 @@ function updateFileName(fileObj, callback) {
 }
 
 export default {
-  login,
-  isLogged,
-  getUserInfo,
-  updateUserInfo,
-  changePass,
-  getUserList,
-  resetUserPass,
-  deleteUser,
-  authUser,
-  getSetting,
-  updateSetting,
-  uploadVideoFile,
-  getSites,
-  getAllVideoFiles,
-  deleteVideoFile,
-  updateFileName,
+  login,  // 登录
+  isLogged, // 是否登录
+  getUserInfo, // 获取用户信息
+  updateUserInfo, // 更新用户信息
+  changePass, // 更改密码
+  getUserList, // 获取用户列表
+  resetUserPass, // 重置用户密码【管理员】
+  deleteUser, // 删除用户
+  authUser, // 授权用户
+  getSetting, // 获取配置
+  updateSetting, // 更新设置
+  uploadVideoFile, // 上传视频文件
+  getSites, // 获取地点
+  getAllVideoFiles, // 获取所有视频文件
+  deleteVideoFile, // 删除指定视频文件
+  updateFileName, // 更新视频文件
 }
