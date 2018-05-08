@@ -114,7 +114,8 @@ class VodVideoList extends Component {
                         }}
                       >
                         <img src={config.vodServerUrl + file.url_snap} alt="" style={{
-                          width: '100%'
+                          width: '100%',
+                          height: '150px'
                         }}/>
                         <div style={{
                           textAlign: 'center'

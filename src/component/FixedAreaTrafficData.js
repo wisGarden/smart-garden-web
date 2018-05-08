@@ -3,6 +3,7 @@ import {Row, Col, Card, Tooltip, Tabs, DatePicker, Button, notification} from 'a
 import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
 import '../style/main.css'
 import websocket from "../service/webSocketCof";
+import config from "../service/config";
 
 const { RangePicker } = DatePicker;
 
@@ -38,7 +39,7 @@ class FixedAreaTrafficData extends Component {
       localStorage.setItem('file_name', this.props.location.state.file_name);
       localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
     }
-    
+
     websocket.wsAreaConfig({
       file_uuid: this.props.location.hash.substr(1),
       onmessage: this.handleSocketOnMessage,
@@ -131,7 +132,18 @@ class FixedAreaTrafficData extends Component {
             {/*src='http://10.211.55.6:10080/api/play/362551602e8a11e88df90d6efe35918e'*/}
             {/*frameBorder='0'*/}
             {/*allowFullScreen/>*/}
-            <img src="/img/area.png" alt="" height={'350px'} width={'550px'}/>
+            {/*<img src="/img/area.png" alt="" height={'350px'} width={'550px'}/>*/}
+            <iframe
+              style={{
+                width: '100%',
+                height: '350px',
+              }}
+              title="vod"
+              allowFullScreen="true"
+              scrolling="no"
+              src={`${config.vodServerUrl}/share.html?id=${localStorage.getItem('file_uuid')}&type=vod`}
+              frameBorder="0"
+            />
           </Col>
           <Col span={12}>
             <Card title="实时客流密度" bordered={false} style={{ width: '100%' }}>
