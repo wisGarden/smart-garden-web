@@ -38,10 +38,12 @@ class FixedPositionTrafficData extends Component {
     //   localStorage.setItem('file_name', this.state.file_name);
     //   localStorage.setItem('file_during_time', this.state.file_during_time);
     // });
-    // if (!!!localStorage.getItem('file_name') || !!!localStorage.getItem('file_during_time')) {
-    localStorage.setItem('file_name', this.props.location.state.file_name);
-    localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
-    // }
+    if (this.props.location.hash.substr(1) !== localStorage.getItem('file_uuid')) {
+      localStorage.setItem('file_name', this.props.location.state.file_name);
+      localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
+    } else {
+      console.log(this.props.location);
+    }
     websocket.wsPosConfig({
       file_uuid: this.props.location.hash.substr(1),
       onmessage: this.handleSocketOnMessage,
