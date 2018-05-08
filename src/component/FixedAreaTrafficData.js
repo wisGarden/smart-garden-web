@@ -9,9 +9,7 @@ const { RangePicker } = DatePicker;
 
 const { TabPane } = Tabs;
 
-const data = [
-  { name: '1:00', traffic_data: 0 },
-];
+const data = [];
 
 class FixedAreaTrafficData extends Component {
   state = {
@@ -47,9 +45,6 @@ class FixedAreaTrafficData extends Component {
       onclose: this.handleSocketOnClose,
       send: JSON.stringify({ 'file_path': localStorage.getItem('file_path') })
     });
-
-    console.log('i am mount, Fixed position');
-
   }
 
   handleSocketOnMessage = (e) => {
@@ -158,7 +153,7 @@ class FixedAreaTrafficData extends Component {
                 lineHeight: '40px',
                 color: 'rgba(0,0,0,.85)',
                 display: 'inline-block'
-              }}>135</p>
+              }}>{this.state.presentTrafficData} 人</p>
               <ResponsiveContainer height={150}>
                 <LineChart
                   data={data.slice(-20)}
