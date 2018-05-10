@@ -26,39 +26,12 @@ class FixedPositionTrafficData extends Component {
 
   data = [];
 
-  getYearHistoryData = () => {
-    let dataByYear = [];
-    for (let month = 1; month <= 12; month++) {
-      const nowYear = (new Date().getFullYear());
-      const lastDayInThisMonth = (new Date(nowYear, month, 0)).getDate();
-      api.getFixedPosTrafficData({
-        start_date: (new Date(nowYear, month - 1, 1)).getTime(),
-        end_date: (new Date(nowYear, month - 1, lastDayInThisMonth)).getTime(),
-        file_uuid: localStorage.getItem('file_uuid')
-      }, res => {
-        const amount = res.data.message.reduce((all, curr) => {
-          return all + curr.traffic_data;
-        }, 0);
-        dataByYear.push({
-          datetime: month,
-          traffic_data: amount
-        });
-      })
-    }
-    console.log(dataByYear);
-    this.setState({
-      historyData: dataByYear
-    }, () => {
-      console.log(this.state.historyData);
-    });
-
-  };
-
   constructor(props) {
     super(props);
   }
 
   componentDidMount() {
+    this.getWeekHistoryData();
     this.data.splice(0, this.data.length);
     if (this.props.location.hash.substr(1) !== localStorage.getItem('file_uuid')) {
       localStorage.setItem('file_name', this.props.location.state.file_name);
@@ -75,6 +48,74 @@ class FixedPositionTrafficData extends Component {
       imgSrc: `${config.posImgStreamUrl}/fixedPos/video_feed/${localStorage.getItem('file_path')}/`
     });
   }
+
+  getWeekHistoryData = () => {
+    api.getFixedPosTrafficData({
+      start_date: (new Date(this.getWeek()[0])).getTime(),
+      end_date: (new Date(this.getWeek()[1])).getTime(),
+      file_uuid: localStorage.getItem('file_uuid')
+    }, res => {
+      this.setState({
+        historyData: res.data.message,
+      });
+    })
+  };
+
+  getYearHistoryData = () => {
+    const nowYear = (new Date()).getFullYear();
+    const nowMonth = (new Date()).getMonth();
+    let dataByYear = [];
+    api.getFixedPosTrafficData({
+      start_date: (new Date(nowYear, 0, 1)).getTime(),
+      end_date: (new Date()).getTime(),
+      file_uuid: localStorage.getItem('file_uuid')
+    }, res => {
+      const allDatas = res.data.message;
+      for (let month = 0; month <= nowMonth; month++) {
+        const formatMonth = month >= 9 ? (month + 1).toString() : `0${month + 1}`;
+        const sumArray = allDatas.filter((dataObj, index) => {
+          const m = dataObj.datetime.substr(5, 2);
+          return m === formatMonth;
+        });
+        const amount = sumArray.reduce((sum, curr) => {
+          return sum + curr.traffic_data;
+        }, 0);
+        dataByYear.push({
+          datetime: month >= 9 ? `${(month + 1).toString()}月` : `0${month + 1}月`,
+          traffic_data: amount
+        })
+      }
+      this.setState({
+        historyData: dataByYear
+      });
+    })
+  };
+
+  getMonthHistoryData = () => {
+    api.getFixedPosTrafficData({
+      start_date: (new Date(this.getMonth()[0])).getTime(),
+      end_date: (new Date(this.getMonth()[1])).getTime(),
+      file_uuid: localStorage.getItem('file_uuid')
+    }, res => {
+      this.setState({
+        historyData: res.data.message,
+      });
+    })
+  };
+
+  getCustomHistoryData = (e) => {
+    const start_date = (new Date(e[0])).getTime();
+    const end_date = (new Date(e[1])).getTime();
+    api.getFixedPosTrafficData({
+      start_date,
+      end_date,
+      file_uuid: localStorage.getItem('file_uuid'),
+    }, res => {
+      this.setState({
+        historyData: res.data.message
+      });
+    })
+  };
 
   handleSocketOnMessage = (e) => {
     const transdata = JSON.parse(e.data);
@@ -121,7 +162,7 @@ class FixedPositionTrafficData extends Component {
     });
   }
 
-  handleHistoryDataGap = function (gap) {
+  handleHistoryDataGap = (gap) => {
     this.setState({
       historyDataGap: gap
     });
@@ -188,36 +229,19 @@ class FixedPositionTrafficData extends Component {
           }}>
             <a className={'chart-gap-choose-anchor'} onClick={() => {
               this.handleHistoryDataGap('byWeek');
-              api.getFixedPosTrafficData({
-                start_date: (new Date(this.getWeek()[0])).getTime(),
-                end_date: (new Date(this.getWeek()[1])).getTime(),
-                file_uuid: localStorage.getItem('file_uuid')
-              }, res => {
-                this.setState({
-                  historyData: res.data.message,
-                });
-              })
+              this.getWeekHistoryData();
             }}>本周</a>
             <a className={'chart-gap-choose-anchor'} onClick={() => {
               this.handleHistoryDataGap('byMonth');
-              api.getFixedPosTrafficData({
-                start_date: (new Date(this.getMonth()[0])).getTime(),
-                end_date: (new Date(this.getMonth()[1])).getTime(),
-                file_uuid: localStorage.getItem('file_uuid')
-              }, res => {
-                this.setState({
-                  historyData: res.data.message,
-                });
-              })
-
+              this.getMonthHistoryData();
             }}>本月</a>
             <a className={'chart-gap-choose-anchor'} onClick={() => {
               this.handleHistoryDataGap('byYear');
               this.getYearHistoryData();
             }}>全年</a>
           </span>
-          <RangePicker onChange={e => {
-            console.log(e);
+          <RangePicker onChange={(e) => {
+            this.getCustomHistoryData(e);
           }}/>
         </div>
       ) : null;
