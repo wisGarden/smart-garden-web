@@ -4,12 +4,11 @@ import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YA
 import '../style/main.css';
 import websocket from '../service/webSocketCof';
 import config from '../service/config';
+import api from "../service/api";
 
 const { RangePicker } = DatePicker;
 
 const { TabPane } = Tabs;
-
-// const data = [];
 
 class FixedPositionTrafficData extends Component {
   state = {
@@ -21,9 +20,39 @@ class FixedPositionTrafficData extends Component {
     imgSrc: '',
     file_name: '',
     file_during_time: '',
+    historyDataGap: 'byWeek', // 历史数据显示默认间隔
+    historyData: [],
   };
 
   data = [];
+
+  getYearHistoryData = () => {
+    let dataByYear = [];
+    for (let month = 1; month <= 12; month++) {
+      const nowYear = (new Date().getFullYear());
+      const lastDayInThisMonth = (new Date(nowYear, month, 0)).getDate();
+      api.getFixedPosTrafficData({
+        start_date: (new Date(nowYear, month - 1, 1)).getTime(),
+        end_date: (new Date(nowYear, month - 1, lastDayInThisMonth)).getTime(),
+        file_uuid: localStorage.getItem('file_uuid')
+      }, res => {
+        const amount = res.data.message.reduce((all, curr) => {
+          return all + curr.traffic_data;
+        }, 0);
+        dataByYear.push({
+          datetime: month,
+          traffic_data: amount
+        });
+      })
+    }
+    console.log(dataByYear);
+    this.setState({
+      historyData: dataByYear
+    }, () => {
+      console.log(this.state.historyData);
+    });
+
+  };
 
   constructor(props) {
     super(props);
@@ -31,13 +60,6 @@ class FixedPositionTrafficData extends Component {
 
   componentDidMount() {
     this.data.splice(0, this.data.length);
-    // this.setState({
-    //   file_name: this.props.location.state.file_name || localStorage.getItem('file_name'),
-    //   file_during_time: this.props.location.state.file_during_time || localStorage.getItem('file_during_time')
-    // }, () => {
-    //   localStorage.setItem('file_name', this.state.file_name);
-    //   localStorage.setItem('file_during_time', this.state.file_during_time);
-    // });
     if (this.props.location.hash.substr(1) !== localStorage.getItem('file_uuid')) {
       localStorage.setItem('file_name', this.props.location.state.file_name);
       localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
@@ -54,6 +76,32 @@ class FixedPositionTrafficData extends Component {
     });
   }
 
+  handleSocketOnMessage = (e) => {
+    const transdata = JSON.parse(e.data);
+    const passenger_data = transdata['passenger_data'];
+    this.data.push({
+      name: '',
+      traffic_data: passenger_data
+    });
+    this.setState({
+      presentTrafficData: passenger_data
+    });
+  };
+
+  handleSocketOnOpen = () => {
+    this.setState({
+      isSocketOpen: true
+    });
+    console.log('The fixed pos socket is open');
+  };
+
+  handleSocketOnClose = () => {
+    this.setState({
+      isSocketOpen: false
+    });
+    console.log('The fixed pos socket is closed');
+  };
+
   shouldComponentUpdate() {
     if (this.state.isSocketOpen) {
 
@@ -67,51 +115,109 @@ class FixedPositionTrafficData extends Component {
     }
   }
 
-  handleSocketOnMessage = (e) => {
-    const transdata = JSON.parse(e.data);
-    const passenger_data = transdata['passenger_data'];
-    this.data.push({
-      name: '',
-      traffic_data: passenger_data
-    });
-    this.setState({
-      presentTrafficData: passenger_data
-    });
-  };
-
-  handleSocketOnOpen = (e) => {
-    this.setState({
-      isSocketOpen: true
-    });
-  };
-
-  handleSocketOnClose = (e) => {
-    this.setState({
-      isSocketOpen: false
-    });
-    console.log('The fixed pos socket is closed');
-  };
-
   componentWillUnmount() {
     this.setState({
       imgSrc: ''
     });
   }
 
-  render() {
+  handleHistoryDataGap = function (gap) {
+    this.setState({
+      historyDataGap: gap
+    });
+  };
 
+  transferDate = (date) => {
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    if (month >= 1 && month <= 9) {
+      month = "0" + month;
+    }
+    if (day >= 0 && day <= 9) {
+      day = "0" + day;
+    }
+    return year + '/' + month + '/' + day;
+  };
+
+  getWeek = () => {
+    //按周日为一周的最后一天计算
+    let date = new Date();
+    //今天是这周的第几天
+    let today = date.getDay();
+    //上周日距离今天的天数（负数表示）
+    let stepSunDay = -today + 1;
+    // 如果今天是周日
+    if (today === 0) {
+      stepSunDay = -7;
+    }
+    // 周一距离今天的天数（负数表示）
+    let stepMonday = 7 - today;
+    let time = date.getTime();
+    let monday = new Date(time + stepSunDay * 24 * 3600 * 1000);
+    let sunday = new Date(time + stepMonday * 24 * 3600 * 1000);
+    //本周一的日期 （起始日期）
+    let startDate = this.transferDate(monday); // 日期变换
+    //本周日的日期 （结束日期）
+    let endDate = this.transferDate(sunday); // 日期变换
+    return [startDate, endDate];
+  };
+
+  getMonth = () => {
+    // 获取当前月的第一天
+    let start = new Date();
+    start.setDate(1);
+    // 获取当前月的最后一天
+    let date = new Date();
+    let currentMonth = date.getMonth();
+    let nextMonth = ++currentMonth;
+    let nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+    let oneDay = 1000 * 60 * 60 * 24;
+    let end = new Date(nextMonthFirstDay - oneDay);
+    let startDate = this.transferDate(start); // 日期变换
+    let endDate = this.transferDate(end); // 日期变换
+    return [startDate, endDate];
+  };
+
+  render() {
     const chooseGap =
       this.state.isExportShow ? (
         <div>
-        <span style={{
-          marginRight: '24px'
-        }}>
-          <a className={'chart-gap-choose-anchor'}>本周</a>
-          <a className={'chart-gap-choose-anchor'}>本月</a>
-          <a className={'chart-gap-choose-anchor'}>全年</a>
-        </span>
+          <span style={{
+            marginRight: '24px'
+          }}>
+            <a className={'chart-gap-choose-anchor'} onClick={() => {
+              this.handleHistoryDataGap('byWeek');
+              api.getFixedPosTrafficData({
+                start_date: (new Date(this.getWeek()[0])).getTime(),
+                end_date: (new Date(this.getWeek()[1])).getTime(),
+                file_uuid: localStorage.getItem('file_uuid')
+              }, res => {
+                this.setState({
+                  historyData: res.data.message,
+                });
+              })
+            }}>本周</a>
+            <a className={'chart-gap-choose-anchor'} onClick={() => {
+              this.handleHistoryDataGap('byMonth');
+              api.getFixedPosTrafficData({
+                start_date: (new Date(this.getMonth()[0])).getTime(),
+                end_date: (new Date(this.getMonth()[1])).getTime(),
+                file_uuid: localStorage.getItem('file_uuid')
+              }, res => {
+                this.setState({
+                  historyData: res.data.message,
+                });
+              })
+
+            }}>本月</a>
+            <a className={'chart-gap-choose-anchor'} onClick={() => {
+              this.handleHistoryDataGap('byYear');
+              this.getYearHistoryData();
+            }}>全年</a>
+          </span>
           <RangePicker onChange={e => {
-            console.log('time is change ');
+            console.log(e);
           }}/>
         </div>
       ) : null;
@@ -137,24 +243,17 @@ class FixedPositionTrafficData extends Component {
       <div>
         <p style={{
           marginBottom: '10px'
-        }}><span style={{
-          fontWeight: 'bold',
-          marginRight: '10px',
-          fontSize: '1.2em'
-        }}>{localStorage.getItem('file_name')}</span><span>{localStorage.getItem('file_during_time')}</span>
+        }}>
+          <span style={{
+            fontWeight: 'bold',
+            marginRight: '10px',
+            fontSize: '1.2em'
+          }}>
+            {localStorage.getItem('file_name')}</span>
+          <span>{localStorage.getItem('file_during_time')}</span>
         </p>
         <Row>
           <Col span={12}>
-            {/*<iframe*/}
-            {/*onClick={() => {*/}
-            {/*console.log('iframe on click');*/}
-            {/*}}*/}
-            {/*title='fixedPosition'*/}
-            {/*width='560px'*/}
-            {/*height='315px'*/}
-            {/*src='http://10.211.55.6:10080/api/play/9661da30437511e8b5ec8b8b2fe21cab'*/}
-            {/*frameBorder='0'*/}
-            {/*allowFullScreen/>*/}
             <img style={{
               width: '560px',
               height: '315px'
@@ -210,9 +309,9 @@ class FixedPositionTrafficData extends Component {
             >
               <TabPane tab="历史数据" key="historyData">
                 <ResponsiveContainer height={300}>
-                  <BarChart width={730} height={250} data={this.data}>
+                  <BarChart width={730} height={250} data={this.state.historyData}>
                     <CartesianGrid strokeDasharray="3 3"/>
-                    <XAxis dataKey="name"/>
+                    <XAxis dataKey="datetime"/>
                     <YAxis/>
                     <Tooltip/>
                     <Legend/>

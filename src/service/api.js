@@ -171,6 +171,19 @@ function updateFileName(fileObj, callback) {
     })
 }
 
+function getFixedPosTrafficData(param, callback) {
+  const { start_date, end_date, file_uuid } = param;
+  const fixedPosData = new FormData();
+  fixedPosData.append('start_date', start_date);
+  fixedPosData.append('end_date', end_date);
+  fixedPosData.append('file_uuid', file_uuid);
+  axios.post(`${config.apiUrl}/fixedPos/get_data/`, fixedPosData, headers)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
 export default {
   login,  // 登录
   isLogged, // 是否登录
@@ -188,4 +201,5 @@ export default {
   getAllVideoFiles, // 获取所有视频文件
   deleteVideoFile, // 删除指定视频文件
   updateFileName, // 更新视频文件
+  getFixedPosTrafficData, // 根据开始，结束日期获得fixedPOS的数据
 }
