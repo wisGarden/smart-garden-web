@@ -9,9 +9,7 @@ const { RangePicker } = DatePicker;
 
 const { TabPane } = Tabs;
 
-const data = [
-  { name: '1:00', traffic_data: 2 },
-];
+// const data = [];
 
 class FixedPositionTrafficData extends Component {
   state = {
@@ -22,15 +20,17 @@ class FixedPositionTrafficData extends Component {
     presentTrafficData: 0,
     imgSrc: '',
     file_name: '',
-    file_during_time: ''
+    file_during_time: '',
   };
+
+  data = [];
 
   constructor(props) {
     super(props);
   }
 
   componentDidMount() {
-    console.log('i am mount, Fixed position');
+    this.data.splice(0, this.data.length);
     // this.setState({
     //   file_name: this.props.location.state.file_name || localStorage.getItem('file_name'),
     //   file_during_time: this.props.location.state.file_during_time || localStorage.getItem('file_during_time')
@@ -41,8 +41,6 @@ class FixedPositionTrafficData extends Component {
     if (this.props.location.hash.substr(1) !== localStorage.getItem('file_uuid')) {
       localStorage.setItem('file_name', this.props.location.state.file_name);
       localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
-    } else {
-      console.log(this.props.location);
     }
     websocket.wsPosConfig({
       file_uuid: this.props.location.hash.substr(1),
@@ -58,7 +56,7 @@ class FixedPositionTrafficData extends Component {
 
   shouldComponentUpdate() {
     if (this.state.isSocketOpen) {
-      console.log('i am in shouldComponent ');
+
     }
     return true;
   }
@@ -72,7 +70,7 @@ class FixedPositionTrafficData extends Component {
   handleSocketOnMessage = (e) => {
     const transdata = JSON.parse(e.data);
     const passenger_data = transdata['passenger_data'];
-    data.push({
+    this.data.push({
       name: '',
       traffic_data: passenger_data
     });
@@ -95,7 +93,6 @@ class FixedPositionTrafficData extends Component {
   };
 
   componentWillUnmount() {
-    console.log('i will unmount');
     this.setState({
       imgSrc: ''
     });
@@ -176,10 +173,12 @@ class FixedPositionTrafficData extends Component {
                 lineHeight: '40px',
                 color: 'rgba(0,0,0,.85)',
                 display: 'inline-block'
-              }}>{this.state.presentTrafficData}</p>
+              }}>{this.data.reduce((pre, curr) => {
+                return pre + curr.traffic_data;
+              }, 0)}</p>
               <ResponsiveContainer height={150}>
                 <LineChart
-                  data={data.slice(-20)}
+                  data={this.data.slice(-20)}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <Tooltip/>
                   <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
@@ -211,7 +210,7 @@ class FixedPositionTrafficData extends Component {
             >
               <TabPane tab="历史数据" key="historyData">
                 <ResponsiveContainer height={300}>
-                  <BarChart width={730} height={250} data={data}>
+                  <BarChart width={730} height={250} data={this.data}>
                     <CartesianGrid strokeDasharray="3 3"/>
                     <XAxis dataKey="name"/>
                     <YAxis/>
