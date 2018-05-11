@@ -4,6 +4,7 @@ import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YA
 import '../style/main.css'
 import websocket from "../service/webSocketCof";
 import config from "../service/config";
+import api from "../service/api";
 
 const { RangePicker } = DatePicker;
 
@@ -19,7 +20,9 @@ class FixedAreaTrafficData extends Component {
     isSocketOpen: false,
     presentTrafficData: 0,
     fileName: '',
-    fileDuringTime: ''
+    fileDuringTime: '',
+    historyData: [],
+    exportExcelLink: ''
   };
 
   constructor(props) {
@@ -27,12 +30,14 @@ class FixedAreaTrafficData extends Component {
   }
 
   componentDidMount() {
+    // TODO 警报功能
     // notification.warning({
     //   message: '警报',
     //   description: '当前区域内人数已超过上限，请及时采取梳理措施，以防发生危险！',
     //   duration: null
     // });
 
+    this.getWeekHistoryData();
     if (this.props.location.hash.substr(1) !== localStorage.getItem('file_uuid')) {
       localStorage.setItem('file_name', this.props.location.state.file_name);
       localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
@@ -46,6 +51,126 @@ class FixedAreaTrafficData extends Component {
       send: JSON.stringify({ 'file_path': localStorage.getItem('file_path') })
     });
   }
+
+  getWeek = () => {
+    //按周日为一周的最后一天计算
+    let date = new Date();
+    //今天是这周的第几天
+    let today = date.getDay();
+    //上周日距离今天的天数（负数表示）
+    let stepSunDay = -today + 1;
+    // 如果今天是周日
+    if (today === 0) {
+      stepSunDay = -7;
+    }
+    // 周一距离今天的天数（负数表示）
+    let stepMonday = 7 - today;
+    let time = date.getTime();
+    let monday = new Date(time + stepSunDay * 24 * 3600 * 1000);
+    let sunday = new Date(time + stepMonday * 24 * 3600 * 1000);
+    //本周一的日期 （起始日期）
+    let startDate = this.transferDate(monday); // 日期变换
+    //本周日的日期 （结束日期）
+    let endDate = this.transferDate(sunday); // 日期变换
+    return [startDate, endDate];
+  };
+
+  getMonth = () => {
+    // 获取当前月的第一天
+    let start = new Date();
+    start.setDate(1);
+    // 获取当前月的最后一天
+    let date = new Date();
+    let currentMonth = date.getMonth();
+    let nextMonth = ++currentMonth;
+    let nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+    let oneDay = 1000 * 60 * 60 * 24;
+    let end = new Date(nextMonthFirstDay - oneDay);
+    let startDate = this.transferDate(start); // 日期变换
+    let endDate = this.transferDate(end); // 日期变换
+    return [startDate, endDate];
+  };
+
+  transferDate = (date) => {
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    if (month >= 1 && month <= 9) {
+      month = "0" + month;
+    }
+    if (day >= 0 && day <= 9) {
+      day = "0" + day;
+    }
+    return year + '/' + month + '/' + day;
+  };
+
+  getWeekHistoryData = () => {
+    api.getFixedAreaTrafficData({
+      start_date: (new Date(this.getWeek()[0])).getTime(),
+      end_date: (new Date(this.getWeek()[1])).getTime(),
+      file_uuid: localStorage.getItem('file_uuid')
+    }, res => {
+      this.setState({
+        historyData: res.data.message,
+      });
+    })
+  };
+
+  getMonthHistoryData = () => {
+    api.getFixedAreaTrafficData({
+      start_date: (new Date(this.getMonth()[0])).getTime(),
+      end_date: (new Date(this.getMonth()[1])).getTime(),
+      file_uuid: localStorage.getItem('file_uuid')
+    }, res => {
+      this.setState({
+        historyData: res.data.message,
+      });
+    })
+  };
+
+  getYearHistoryData = () => {
+    const nowYear = (new Date()).getFullYear();
+    const nowMonth = (new Date()).getMonth();
+    let dataByYear = [];
+    api.getFixedAreaTrafficData({
+      start_date: (new Date(nowYear, 0, 1)).getTime(),
+      end_date: (new Date()).getTime(),
+      file_uuid: localStorage.getItem('file_uuid')
+    }, res => {
+      const allDatas = res.data.message;
+      for (let month = 0; month <= nowMonth; month++) {
+        const formatMonth = month >= 9 ? (month + 1).toString() : `0${month + 1}`;
+        const sumArray = allDatas.filter((dataObj, index) => {
+          const m = dataObj.datetime.substr(5, 2);
+          return m === formatMonth;
+        });
+        const amount = sumArray.reduce((sum, curr) => {
+          return sum + curr.density_data;
+        }, 0);
+        dataByYear.push({
+          datetime: month >= 9 ? `${(month + 1).toString()}月` : `0${month + 1}月`,
+          density_data: amount
+        })
+      }
+      this.setState({
+        historyData: dataByYear
+      });
+    })
+  };
+
+  getCustomHistoryData = (e) => {
+    const start_date = (new Date(e[0])).getTime();
+    const end_date = (new Date(e[1])).getTime();
+    api.getFixedAreaTrafficData({
+      start_date,
+      end_date,
+      file_uuid: localStorage.getItem('file_uuid'),
+    }, res => {
+      this.setState({
+        historyData: res.data.message
+      });
+    })
+  };
 
   handleSocketOnMessage = (e) => {
     const transdata = JSON.parse(e.data);
@@ -82,12 +207,27 @@ class FixedAreaTrafficData extends Component {
         <span style={{
           marginRight: '24px'
         }}>
-          <a className={'chart-gap-choose-anchor'}>本周</a>
-          <a className={'chart-gap-choose-anchor'}>本月</a>
-          <a className={'chart-gap-choose-anchor'}>全年</a>
+          <a
+            className={'chart-gap-choose-anchor'}
+            onClick={() => {
+              this.getWeekHistoryData();
+            }}
+          >本周</a>
+          <a
+            className={'chart-gap-choose-anchor'}
+            onClick={() => {
+              this.getMonthHistoryData();
+            }}
+          >本月</a>
+          <a
+            className={'chart-gap-choose-anchor'}
+            onClick={() => {
+              this.getYearHistoryData();
+            }}
+          >全年</a>
         </span>
           <RangePicker onChange={e => {
-            console.log('time is change ');
+            this.getCustomHistoryData(e);
           }}/>
         </div>
       ) : null;
@@ -109,6 +249,43 @@ class FixedAreaTrafficData extends Component {
       });
     };
 
+    const handleExportExcelByWeek = () => {
+      const start_date = (new Date(this.getWeek()[0])).getTime();
+      const end_date = (new Date(this.getWeek()[1])).getTime();
+      const file_uuid = localStorage.getItem('file_uuid');
+      this.setState({
+        exportExcelLink: `${config.apiUrl}/fixedArea/export_data/${start_date}/${end_date}/${file_uuid}`,
+      });
+    };
+
+    const handleExportExcelByMonth = () => {
+      const start_date = (new Date(this.getMonth()[0])).getTime();
+      const end_date = (new Date(this.getMonth()[1])).getTime();
+      const file_uuid = localStorage.getItem('file_uuid');
+      this.setState({
+        exportExcelLink: `${config.apiUrl}/fixedArea/export_data/${start_date}/${end_date}/${file_uuid}`,
+      });
+    };
+
+    const handleExportExcelByYear = () => {
+      const nowYear = (new Date()).getFullYear();
+      const start_date = (new Date(nowYear, 0, 1)).getTime();
+      const end_date = (new Date()).getTime();
+      const file_uuid = localStorage.getItem('file_uuid');
+      this.setState({
+        exportExcelLink: `${config.apiUrl}/fixedArea/export_data/${start_date}/${end_date}/${file_uuid}`,
+      });
+    };
+
+    const handleExportExcelByCustom = e => {
+      const start_date = (new Date(e[0])).getTime();
+      const end_date = (new Date(e[1])).getTime();
+      const file_uuid = localStorage.getItem('file_uuid');
+      this.setState({
+        exportExcelLink: `${config.apiUrl}/fixedArea/export_data/${start_date}/${end_date}/${file_uuid}`,
+      });
+    };
+
     return (
       <div>
         <p style={{
@@ -120,14 +297,6 @@ class FixedAreaTrafficData extends Component {
         }}>{localStorage.getItem('file_name')}</span><span>{localStorage.getItem('file_during_time')}</span></p>
         <Row>
           <Col span={12}>
-            {/*<iframe*/}
-            {/*title='fixedPosition'*/}
-            {/*width='560px'*/}
-            {/*height='315px'*/}
-            {/*src='http://10.211.55.6:10080/api/play/362551602e8a11e88df90d6efe35918e'*/}
-            {/*frameBorder='0'*/}
-            {/*allowFullScreen/>*/}
-            {/*<img src="/img/area.png" alt="" height={'350px'} width={'550px'}/>*/}
             <iframe
               style={{
                 width: '100%',
@@ -188,13 +357,13 @@ class FixedAreaTrafficData extends Component {
             >
               <TabPane tab="历史数据" key="historyData">
                 <ResponsiveContainer height={300}>
-                  <BarChart width={730} height={250} data={data}>
+                  <BarChart width={730} height={250} data={this.state.historyData}>
                     <CartesianGrid strokeDasharray="3 3"/>
-                    <XAxis dataKey="name"/>
+                    <XAxis dataKey="datetime"/>
                     <YAxis/>
                     <Tooltip/>
                     <Legend/>
-                    <Bar name={'客流密度'} dataKey="traffic_density" fill="#82ca9d"/>
+                    <Bar name={'客流密度'} dataKey="density_data" fill="#82ca9d"/>
                   </BarChart>
                 </ResponsiveContainer>
               </TabPane>
@@ -208,35 +377,64 @@ class FixedAreaTrafficData extends Component {
                 }}>请选择导出日期：</p>
 
                 <div>
-                  <input onChange={e => {
-                    setDateGap('byWeek');
-                  }} value={'byWeek'} className={'radio-choose-date-gap'} type="radio" id={'byWeek'}
-                         name={'dateGap'}/><label
-                  htmlFor="byWeek">本周</label>
+                  <input
+                    onChange={e => {
+                      setDateGap('byWeek');
+                      handleExportExcelByWeek();
+                    }}
+                    value={'byWeek'}
+                    className={'radio-choose-date-gap'}
+                    type="radio"
+                    id={'byWeek'}
+                    name={'dateGap'}
+                  />
+                  <label htmlFor="byWeek">本周</label>
                 </div>
                 <div>
-                  <input onChange={e => {
-                    setDateGap('byMonth');
-                  }} value={'byMonth'} className={'radio-choose-date-gap'} type="radio" id={'byMonth'}
-                         name={'dateGap'}/><label
-                  htmlFor="byMonth">本月</label>
+                  <input
+                    onChange={e => {
+                      setDateGap('byMonth');
+                      handleExportExcelByMonth();
+                    }}
+                    value={'byMonth'}
+                    className={'radio-choose-date-gap'}
+                    type="radio"
+                    id={'byMonth'}
+                    name={'dateGap'}
+                  />
+                  <label htmlFor="byMonth">本月</label>
                 </div>
                 <div>
-                  <input onChange={e => {
-                    setDateGap('byYear');
-                  }} value={'byYear'} className={'radio-choose-date-gap'} type="radio" id={'byYear'}
-                         name={'dateGap'}/><label
-                  htmlFor="byYear">本年</label>
+                  <input
+                    onChange={e => {
+                      setDateGap('byYear');
+                      handleExportExcelByYear();
+                    }}
+                    value={'byYear'}
+                    className={'radio-choose-date-gap'}
+                    type="radio"
+                    id={'byYear'}
+                    name={'dateGap'}
+                  />
+                  <label htmlFor="byYear">本年</label>
                 </div>
                 <div>
-                  <input onChange={e => {
-                    setDateGap('byCustom');
-                  }} value={'byCustom'} className={'radio-choose-date-gap'} type="radio" id={'byCustom'}
-                         name={'dateGap'}/>
-                  <label
-                    htmlFor="byCustom">自定义时间段</label>
+                  <input
+                    onChange={e => {
+                      setDateGap('byCustom');
+                    }}
+                    value={'byCustom'}
+                    className={'radio-choose-date-gap'}
+                    type="radio"
+                    id={'byCustom'}
+                    name={'dateGap'}
+                  />
+                  <label htmlFor="byCustom">自定义时间段</label>
                   {this.state.isRangePickerShow ?
                     <RangePicker
+                      onChange={e => {
+                        handleExportExcelByCustom(e);
+                      }}
                       style={{
                         marginLeft: '10px',
                         verticalAlign: 'middle'
@@ -245,7 +443,9 @@ class FixedAreaTrafficData extends Component {
                 </div>
                 <Button style={{
                   margin: '10px'
-                }} type={'primary'}>导出</Button>
+                }} type={'primary'}>
+                  <a href={`${this.state.exportExcelLink}`} target='_blank'>导出</a>
+                </Button>
               </TabPane>
             </Tabs>
           </Col>
