@@ -106,6 +106,8 @@ class FixedAreaVideoList extends Component {
                           onClick={e => {
                             localStorage.setItem('file_path', file.file_path);
                             localStorage.setItem('file_uuid', file.file_uuid);
+                            localStorage.setItem('file_name', file.file_site);
+                            localStorage.setItem('file_during_time', utils.handleDuringTime(file.during_time).start_time);
                           }}
                         >
                           <img src={config.vodServerUrl + file.url_snap} alt="" style={{

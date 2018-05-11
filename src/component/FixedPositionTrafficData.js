@@ -34,10 +34,6 @@ class FixedPositionTrafficData extends Component {
   componentDidMount() {
     this.getWeekHistoryData();
     this.data.splice(0, this.data.length);
-    if (this.props.location.hash.substr(1) !== localStorage.getItem('file_uuid')) {
-      localStorage.setItem('file_name', this.props.location.state.file_name);
-      localStorage.setItem('file_during_time', this.props.location.state.file_during_time);
-    }
     websocket.wsPosConfig({
       file_uuid: this.props.location.hash.substr(1),
       onmessage: this.handleSocketOnMessage,
