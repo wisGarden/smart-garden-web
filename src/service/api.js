@@ -184,6 +184,19 @@ function getFixedPosTrafficData(param, callback) {
     })
 }
 
+function getFixedAreaTrafficData(param, callback) {
+  const { start_date, end_date, file_uuid } = param;
+  const fixedAreaData = new FormData();
+  fixedAreaData.append('start_date', start_date);
+  fixedAreaData.append('end_date', end_date);
+  fixedAreaData.append('file_uuid', file_uuid);
+  axios.post(`${config.apiUrl}/fixedArea/get_data/`, fixedAreaData, headers)
+    .then(callback)
+    .catch(error => {
+      throw error;
+    })
+}
+
 export default {
   login,  // 登录
   isLogged, // 是否登录
@@ -202,4 +215,5 @@ export default {
   deleteVideoFile, // 删除指定视频文件
   updateFileName, // 更新视频文件
   getFixedPosTrafficData, // 根据开始，结束日期获得fixedPOS的数据
+  getFixedAreaTrafficData, // 根据开始，结束日期获得fixedArea的数据
 }
