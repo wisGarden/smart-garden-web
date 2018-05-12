@@ -5,5 +5,5 @@ export default {
   posImgStreamUrl: 'http://192.168.199.146:8000',
   // wsUrl: 'ws://localhost:8000/ws',
   // vodServerUrl: 'http://10.211.55.6:10080'
-  vodServerUrl: 'http://192.168.199.222:10080'
+  vodServerUrl: 'http://192.168.199.221:10080'
 }

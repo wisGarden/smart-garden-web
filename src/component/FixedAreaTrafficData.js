@@ -317,7 +317,7 @@ class FixedAreaTrafficData extends Component {
                 lineHeight: '40px',
                 color: 'rgba(0,0,0,.85)',
                 display: 'inline-block'
-              }}>{this.state.presentTrafficData} 人</p>
+              }}>{parseInt(this.state.presentTrafficData / 10)} 人</p>
               <ResponsiveContainer height={150}>
                 <LineChart
                   data={data.slice(-20)}
