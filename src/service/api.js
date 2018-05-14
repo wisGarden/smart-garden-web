@@ -125,7 +125,11 @@ function updateSetting(settingObj, callback) {
 function uploadVideoFile(fileObj, callback) {
   console.log(fileObj);
   const file = new FormData();
-  file.append('file_info', JSON.stringify(fileObj));
+  file.append('video_file', fileObj.video_file);
+  file.append('file_site', fileObj.file_site);
+  file.append('traffic_density_limit', fileObj.traffic_density_limit);
+  file.append('analyse_type', fileObj.analyse_type);
+  file.append('file_during_time', fileObj.file_during_time);
   axios.post(`${config.apiUrl}/video/insert/`, file, headers)
     .then(callback)
     .catch(error => {

@@ -24,19 +24,13 @@ class VideoUploadItemForm extends Component {
     super(props);
     this.state = {
       isTrafficLimitShow: false,
-      isFileUploaded: false,
       isAnalyseTypeDecided: false,
-      file_uuid: '', // 文件uuid
-      file_name: '', // 文件名
-      file_path: '', // 文件路径
-      file_type: '', // 文件类型
-      file_size: 0, // 文件大小
-      file_extend: '', // 文件拓展名
       file_site: '', // 文件的地点
       file_during_time: '', // 文件的时间
       analyse_type: '', // 文件的分析类型
       traffic_density_limit: 0, // 地点客流密度上限
       all_sites: [],
+      video_file: null
     };
   }
 
@@ -101,38 +95,9 @@ class VideoUploadItemForm extends Component {
   };
 
   uploadFile = (e) => {
-    const files = e.file;
-    const video = new FormData();
-    video.append('name', files);
-    axios.post(`${config.vodServerUrl}/vod/upload`, video, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      }
-    }).then(res => {
-      const file_uuid = res.data[0];
-      this.setState({
-        file_uuid,
-      }, () => {
-        axios.post(`${config.vodServerUrl}/vod/get`, querystring.stringify({ id: this.state.file_uuid }), {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }).then(res => {
-          const fileInfo = res.data;
-          this.setState({
-            file_extend: fileInfo.url.split('.')[1],
-            file_path: fileInfo.url,
-            file_name: fileInfo.name,
-            file_type: fileInfo.type,
-            file_size: fileInfo.size,
-            isFileUploaded: true
-          });
-        }).catch(error => {
-          throw error
-        })
-      });
-    }).catch(error => {
-      throw error
+    const video_file = e.file;
+    this.setState({
+      video_file
     });
   };
 
@@ -140,42 +105,21 @@ class VideoUploadItemForm extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        if (this.state.isFileUploaded) {
-          const { file_uuid, file_name, file_path, file_type, file_size, file_extend, file_site, file_during_time, analyse_type, traffic_density_limit } = this.state;
-          const fileObj = {
-            file_uuid,
-            file_name,
-            file_path,
-            file_type,
-            file_size,
-            file_extend,
-            file_site,
-            file_during_time,
-            analyse_type,
-            traffic_density_limit
-          };
-          api.uploadVideoFile(fileObj, res => {
-            if (res.data.success === 'true') {
-              axios.post(`${config.vodServerUrl}/vod/turn/shared`, querystring.stringify({
-                id: fileObj.file_uuid,
-                shared: true
-              }), {
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-              }).then(res => {
-                message.success('上传成功！', 1, () => {
-                  window.location.reload();
-                });
-              }).catch(error => {
-                throw error;
-              });
-            }
-          })
-        } else {
-          message.error('请上传视频文件');
-          return null;
-        }
+        const { video_file, file_site, file_during_time, analyse_type, traffic_density_limit } = this.state;
+        const fileObj = {
+          video_file,
+          file_site,
+          file_during_time,
+          analyse_type,
+          traffic_density_limit
+        };
+        api.uploadVideoFile(fileObj, res => {
+          if (res.data.success === 'true') {
+            message.success('上传成功！', 1, () => {
+              window.location.reload();
+            });
+          }
+        })
       }
     });
   };
@@ -188,7 +132,6 @@ class VideoUploadItemForm extends Component {
     };
     return (
       <Form onSubmit={this.handleVideoUploadSubmit}>
-
         {/*视频文件*/}
         <FormItem
           {...formItemLayout}
@@ -209,7 +152,6 @@ class VideoUploadItemForm extends Component {
             </Upload.Dragger>
           </div>
         </FormItem>
-
         {/*录像地点*/}
         <FormItem
           {...formItemLayout}
@@ -307,9 +249,7 @@ class VideoUploadItemForm extends Component {
           </FormItem> : null}
 
         {/*上传*/}
-        <FormItem
-          wrapperCol={{ span: 12, offset: 6 }}
-        >
+        <FormItem wrapperCol={{ span: 12, offset: 6 }}>
           <Button type="primary" htmlType="submit">上传</Button>
         </FormItem>
       </Form>
