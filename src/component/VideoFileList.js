@@ -34,7 +34,7 @@ class VideoFileList extends Component {
       render: videoFile => {
         const snapPath = videoFile.url_snap;
         return <Avatar size='large' shape='square'
-                       src={`${config.posImgStreamUrl}/static/${snapPath.replace('media/', '')}`}/>;
+                       src={`${config.apiUrl}/static/${snapPath.replace('media/', '')}`}/>;
       }
     },
     { title: '视频地点', dataIndex: 'file_site', align: 'center', width: 100 },
