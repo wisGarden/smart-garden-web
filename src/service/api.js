@@ -123,7 +123,6 @@ function updateSetting(settingObj, callback) {
 }
 
 function uploadVideoFile(fileObj, callback) {
-  console.log(fileObj);
   const file = new FormData();
   file.append('video_file', fileObj.video_file);
   file.append('file_site', fileObj.file_site);

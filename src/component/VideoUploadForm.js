@@ -40,8 +40,6 @@ class VideoUploadItemForm extends Component {
         const all_sites = res.data.message;
         this.setState({
           all_sites,
-        }, () => {
-          console.log(this.state.all_sites);
         });
       }
     });

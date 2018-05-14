@@ -31,7 +31,11 @@ class VideoFileList extends Component {
       key: '1',
       width: 100,
       align: 'center',
-      render: videoFile => (<Avatar size='large' shape='square' src={config.vodServerUrl + videoFile.url_snap}/>)
+      render: videoFile => {
+        const snapPath = videoFile.url_snap;
+        return <Avatar size='large' shape='square'
+                       src={`${config.posImgStreamUrl}/static/${snapPath.replace('media/', '')}`}/>;
+      }
     },
     { title: '视频地点', dataIndex: 'file_site', align: 'center', width: 100 },
     { title: '视频名称', dataIndex: 'file_name', align: 'center', width: 100 },
@@ -82,7 +86,8 @@ class VideoFileList extends Component {
             <a onClick={() => {
               this.setState({
                 changingFile: videoFile,
-                isChangingName: true
+                isChangingName: true,
+                new_file_name: videoFile.file_name
               });
             }}>修改名称</a>
             <br/>
@@ -166,15 +171,17 @@ class VideoFileList extends Component {
           ]}
         >
           <p>请输入文件名：</p>
-          <Input value={this.state.new_file_name}
-                 onPressEnter={this.updateFileName}
-                 onChange={(e) => {
-                   this.setState({
-                     new_file_name: e.target.value,
-                   });
-                 }}
-                 type={'text'}
-                 placeholder={'请输入文件名'}/>
+          <Input
+            value={this.state.new_file_name}
+            placeholder={this.state.changingFile.file_name}
+            onPressEnter={this.updateFileName}
+            onChange={(e) => {
+              this.setState({
+                new_file_name: e.target.value,
+              });
+            }}
+            type={'text'}
+          />
         </Modal>
         <Table
           columns={this.columns}
