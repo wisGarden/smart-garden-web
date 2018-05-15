@@ -113,7 +113,7 @@ class VodVideoList extends Component {
                           this.handleShowModal(file.file_site, utils.handleDuringTime(file.during_time).start_time);
                         }}
                       >
-                        <img src={config.vodServerUrl + file.url_snap} alt="" style={{
+                        <img src={`${config.apiUrl}/static/${file.url_snap.replace('media/', '')}`} alt="" style={{
                           width: '100%',
                           height: '150px'
                         }}/>
