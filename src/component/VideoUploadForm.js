@@ -3,9 +3,6 @@ import {
   Form, Select, Button, Upload, Icon, DatePicker, Radio, Input, message, Progress
 } from 'antd';
 import api from '../service/api';
-import config from '../service/config';
-
-const querystring = require('querystring');
 
 const { RadioGroup } = Radio;
 
