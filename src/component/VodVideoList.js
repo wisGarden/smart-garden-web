@@ -4,6 +4,8 @@ import '../style/main.css';
 import api from '../service/api';
 import config from '../service/config';
 import utils from '../service/utils';
+import {Player} from 'video-react';
+import "../../node_modules/video-react/dist/video-react.css";
 
 const Option = Select.Option;
 
@@ -148,18 +150,12 @@ class VodVideoList extends Component {
             width: '816px'
           }}
         >
-          <iframe
-            style={{
-              width: '768px',
-              height: '430px',
-            }}
-            title="vod"
-            allowFullScreen="true"
-            scrolling="no"
-            src={`${config.vodServerUrl}/share.html?id=${localStorage.getItem('file_uuid')}&type=vod`}
-            frameBorder="0"
+          <Player
+            playsInline
+            autoPlay={true}
+            preload={'auto'}
+            src={`${config.apiUrl}/static${localStorage.getItem('file_path').replace('media/', '')}`}
           />
-
         </Modal>
       </div>
     );
