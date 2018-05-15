@@ -5,6 +5,8 @@ import '../style/main.css'
 import websocket from "../service/webSocketCof";
 import config from "../service/config";
 import api from "../service/api";
+import {Player} from 'video-react';
+import "../../node_modules/video-react/dist/video-react.css";
 
 const { RangePicker } = DatePicker;
 
@@ -43,7 +45,7 @@ class FixedAreaTrafficData extends Component {
       onmessage: this.handleSocketOnMessage,
       onopen: this.handleSocketOnOpen,
       onclose: this.handleSocketOnClose,
-      send: JSON.stringify({ 'file_path': localStorage.getItem('file_path') })
+      send: JSON.stringify({ 'file_path': decodeURI(localStorage.getItem('file_path')) })
     });
   }
 
@@ -292,16 +294,15 @@ class FixedAreaTrafficData extends Component {
         }}>{localStorage.getItem('file_name')}</span><span>{localStorage.getItem('file_during_time')}</span></p>
         <Row>
           <Col span={12}>
-            <iframe
+            <Player
               style={{
                 width: '100%',
                 height: '350px',
               }}
-              title="vod"
-              allowFullScreen="true"
-              scrolling="no"
-              src={`${config.vodServerUrl}/share.html?id=${localStorage.getItem('file_uuid')}&type=vod`}
-              frameBorder="0"
+              playsInline
+              autoPlay={true}
+              preload={'auto'}
+              src={`${config.apiUrl}/static${localStorage.getItem('file_path').replace('media/', '')}`}
             />
           </Col>
           <Col span={12}>

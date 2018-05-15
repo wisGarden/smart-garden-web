@@ -140,26 +140,13 @@ class FixedPositionTrafficData extends Component {
     console.log('The fixed pos socket is closed');
   };
 
-  shouldComponentUpdate() {
-    if (this.state.isSocketOpen) {
-
-    }
-    return true;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.location !== this.props.location) {
-      console.log('navigated!');
-    }
-  }
-
   componentWillUnmount() {
     this.setState({
       imgSrc: ''
     });
   }
 
-  handleHistoryDataGap = (gap) => {
+  handleHistoryDataGap = gap => {
     this.setState({
       historyDataGap: gap
     });
@@ -237,7 +224,7 @@ class FixedPositionTrafficData extends Component {
               this.getYearHistoryData();
             }}>全年</a>
           </span>
-          <RangePicker onChange={(e) => {
+          <RangePicker onChange={e => {
             this.getCustomHistoryData(e);
           }}/>
         </div>
@@ -307,7 +294,8 @@ class FixedPositionTrafficData extends Component {
             marginRight: '10px',
             fontSize: '1.2em'
           }}>
-            {localStorage.getItem('file_name')}</span>
+            {localStorage.getItem('file_name')}
+            </span>
           <span>{localStorage.getItem('file_during_time')}</span>
         </p>
         <Row>
