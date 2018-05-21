@@ -206,6 +206,16 @@ function getFixedAreaTrafficData(param, callback) {
     })
 }
 
+function getDensityLimit(file_uuid, callback) {
+  const file = new FormData();
+  file.append('file_uuid', file_uuid);
+  axios.post(`${config.apiUrl}/video/densityLimit/`, file, headers)
+    .then(callback)
+    .catch(err => {
+      throw  err;
+    })
+}
+
 export default {
   login,  // 登录
   isLogged, // 是否登录
@@ -225,4 +235,5 @@ export default {
   updateFileName, // 更新视频文件
   getFixedPosTrafficData, // 根据开始，结束日期获得fixedPOS的数据
   getFixedAreaTrafficData, // 根据开始，结束日期获得fixedArea的数据
+  getDensityLimit, // 根据file_uuid，获得该地点的最大客流密度
 }

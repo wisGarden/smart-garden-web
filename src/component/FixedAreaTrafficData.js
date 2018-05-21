@@ -24,7 +24,10 @@ class FixedAreaTrafficData extends Component {
     fileName: '',
     fileDuringTime: '',
     historyData: [],
-    exportExcelLink: ''
+    exportExcelLink: '',
+    densityLimit: 0,
+    isWarningShownFlag: false,
+    isSuccessShownFlag: false,
   };
 
   constructor(props) {
@@ -32,13 +35,14 @@ class FixedAreaTrafficData extends Component {
   }
 
   componentDidMount() {
-    // TODO 警报功能
-    // notification.warning({
-    //   message: '警报',
-    //   description: '当前区域内人数已超过上限，请及时采取梳理措施，以防发生危险！',
-    //   duration: null
-    // });
-
+    api.getDensityLimit(localStorage.getItem('file_uuid'), res => {
+      const result = res.data;
+      if (result.result === 'true') {
+        this.setState({
+          densityLimit: result.message.site_density_limit
+        });
+      }
+    });
     this.getWeekHistoryData();
     websocket.wsAreaConfig({
       file_uuid: this.props.location.hash.substr(1),
@@ -177,7 +181,36 @@ class FixedAreaTrafficData extends Component {
       traffic_data: passenger_data
     });
     this.setState({
-      presentTrafficData: passenger_data
+      presentTrafficData: passenger_data / 10
+    }, () => {
+      if (this.state.presentTrafficData > this.state.densityLimit) {
+        if (this.state.isWarningShownFlag === false) {
+          notification.warning({
+            message: '警报',
+            description: '当前区域内人数已超过上限，请及时采取梳理措施，以防发生危险！',
+            duration: 60
+          });
+          this.setState({
+            isWarningShownFlag: true,
+            isSuccessShownFlag: false
+          })
+        }
+      } else {
+        this.setState({
+          isWarningShownFlag: false,
+        }, () => {
+          if (this.state.isSuccessShownFlag === false) {
+            notification.success({
+              message: '通知',
+              description: '人数密集度警报已解除!',
+              duration: 60,
+            });
+            this.setState({
+              isSuccessShownFlag: true
+            });
+          }
+        });
+      }
     });
   };
 
@@ -318,7 +351,7 @@ class FixedAreaTrafficData extends Component {
                 lineHeight: '40px',
                 color: 'rgba(0,0,0,.85)',
                 display: 'inline-block'
-              }}>{parseInt(this.state.presentTrafficData / 10)} 人</p>
+              }}>{parseInt(this.state.presentTrafficData)} 人</p>
               <ResponsiveContainer height={150}>
                 <LineChart
                   data={data.slice(-20)}
