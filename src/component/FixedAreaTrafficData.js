@@ -202,7 +202,7 @@ class FixedAreaTrafficData extends Component {
           if (this.state.isSuccessShownFlag === false) {
             notification.success({
               message: '通知',
-              description: '人数密集度警报已解除!',
+              description: '人数密集警报已解除!',
               duration: 60,
             });
             this.setState({
