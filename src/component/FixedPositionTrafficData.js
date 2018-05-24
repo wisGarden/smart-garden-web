@@ -22,7 +22,8 @@ class FixedPositionTrafficData extends Component {
     file_during_time: '',
     historyDataGap: 'byWeek', // 历史数据显示默认间隔
     historyData: [],
-    exportExcelLink: ''
+    exportExcelLink: '',
+    passenger_image: ''
   };
 
   data = [];
@@ -39,10 +40,11 @@ class FixedPositionTrafficData extends Component {
       onmessage: this.handleSocketOnMessage,
       onopen: this.handleSocketOnOpen,
       onclose: this.handleSocketOnClose,
-      send: JSON.stringify({ 'file_path': localStorage.getItem('file_path') })
+      send: JSON.stringify({ 'file_path': decodeURI(localStorage.getItem('file_path')) })
     });
     this.setState({
-      imgSrc: `${config.posImgStreamUrl}/fixedPos/video_feed/${localStorage.getItem('file_path')}/`
+      // imgSrc: `${config.posImgStreamUrl}/fixedPos/video_feed/${localStorage.getItem('file_path')}/`
+
     });
   }
 
@@ -117,12 +119,16 @@ class FixedPositionTrafficData extends Component {
   handleSocketOnMessage = (e) => {
     const transdata = JSON.parse(e.data);
     const passenger_data = transdata['passenger_data'];
+    const passenger_image = transdata['passenger_image'];
+    console.log(passenger_image);
     this.data.push({
       name: '',
-      traffic_data: passenger_data
+      traffic_data: passenger_data,
     });
     this.setState({
-      presentTrafficData: passenger_data
+      presentTrafficData: passenger_data,
+      // passenger_image,
+      // imgSrc: `${config.apiUrl}/static/${this.state.passenger_image.replace('media/', '')}`
     });
   };
 
