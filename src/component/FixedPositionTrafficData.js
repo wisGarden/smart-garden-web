@@ -43,7 +43,7 @@ class FixedPositionTrafficData extends Component {
       send: JSON.stringify({ 'file_path': decodeURI(localStorage.getItem('file_path')) })
     });
     this.setState({
-      imgSrc: `${config.posImgStreamUrl}/fixedPos/video_feed/${localStorage.getItem('file_path')}/`
+      imgSrc: `${config.posImgStreamUrl}/fixedPos/video_feed${decodeURI(localStorage.getItem('file_path'))}/`
     });
   }
 
