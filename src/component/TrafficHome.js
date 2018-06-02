@@ -59,6 +59,7 @@ class TrafficHome extends Component {
       return (
         <Switch>
           <Route exact path='/home/' component={VideoFileList}/>
+          <Route exact path='/home/video-list/' component={VideoFileList}/>
           <Route exact path='/home/fixed-pos/' component={FixedPositionVideoList}/>
           <Route exact path='/home/fixed-area/' component={FixedAreaVideoList}/>
           <Route path='/home/fixed-pos/analyse' component={FixedPositionTrafficData}/>
@@ -128,6 +129,15 @@ class TrafficHome extends Component {
                 }} to={`/home/vod`}>
                   <Icon type="laptop"/>
                   <span>录像回放</span>
+                </Link>
+              </Menu.Item>
+
+              <Menu.Item key="video-list">
+                <Link style={{
+                  color: 'rgba(0,0,0,0.65)'
+                }} to={`/home/video-list/`}>
+                  <Icon type="bars"/>
+                  <span>录像列表</span>
                 </Link>
               </Menu.Item>
 
