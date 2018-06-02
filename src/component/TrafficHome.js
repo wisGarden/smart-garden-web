@@ -11,6 +11,7 @@ import VideoFileList from './VideoFileList';
 import TrafficSetting from './TrafficSetting';
 import FixedPositionTrafficData from './FixedPositionTrafficData';
 import FixedAreaTrafficData from './FixedAreaTrafficData';
+import Welcome from './Welcome';
 import {Route, Switch, Link} from 'react-router-dom';
 import api from '../service/api';
 
@@ -58,7 +59,7 @@ class TrafficHome extends Component {
       // }
       return (
         <Switch>
-          <Route exact path='/home/' component={VideoFileList}/>
+          <Route exact path='/home/' component={Welcome}/>
           <Route exact path='/home/video-list/' component={VideoFileList}/>
           <Route exact path='/home/fixed-pos/' component={FixedPositionVideoList}/>
           <Route exact path='/home/fixed-area/' component={FixedAreaVideoList}/>
