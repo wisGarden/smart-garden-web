@@ -8,6 +8,7 @@ function wsPosConfig(confObj) {
     confObj.onopen(e);
     socket.send(confObj.send);
   };
+  return socket;
 }
 
 function wsAreaConfig(confObj) {
@@ -18,6 +19,7 @@ function wsAreaConfig(confObj) {
     confObj.onopen(e);
     socket.send(confObj.send);
   };
+  return socket;
 }
 
 export default { wsPosConfig, wsAreaConfig }

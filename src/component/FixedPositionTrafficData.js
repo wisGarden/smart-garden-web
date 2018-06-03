@@ -26,6 +26,8 @@ class FixedPositionTrafficData extends Component {
     passenger_image: ''
   };
 
+  socket = null;
+
   data = [];
 
   constructor(props) {
@@ -35,7 +37,7 @@ class FixedPositionTrafficData extends Component {
   componentDidMount() {
     this.getWeekHistoryData();
     this.data.splice(0, this.data.length);
-    websocket.wsPosConfig({
+    this.socket = websocket.wsPosConfig({
       file_uuid: this.props.location.hash.substr(1),
       onmessage: this.handleSocketOnMessage,
       onopen: this.handleSocketOnOpen,
@@ -147,6 +149,7 @@ class FixedPositionTrafficData extends Component {
   };
 
   componentWillUnmount() {
+    this.socket.close();
     this.setState({
       imgSrc: ''
     });
