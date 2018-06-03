@@ -396,86 +396,90 @@ class FixedAreaTrafficData extends Component {
                   </BarChart>
                 </ResponsiveContainer>
               </TabPane>
-              <TabPane tab="数据导出" key="dataExport" style={{
-                height: '300px',
-                paddingLeft: '20px',
-                paddingTop: '5px'
-              }}>
-                <p style={{
-                  marginBottom: '5px'
-                }}>请选择导出日期：</p>
 
-                <div>
-                  <input
-                    onChange={e => {
-                      setDateGap('byWeek');
-                      handleExportExcelByWeek();
-                    }}
-                    value={'byWeek'}
-                    className={'radio-choose-date-gap'}
-                    type="radio"
-                    id={'byWeek'}
-                    name={'dateGap'}
-                  />
-                  <label htmlFor="byWeek">本周</label>
-                </div>
-                <div>
-                  <input
-                    onChange={e => {
-                      setDateGap('byMonth');
-                      handleExportExcelByMonth();
-                    }}
-                    value={'byMonth'}
-                    className={'radio-choose-date-gap'}
-                    type="radio"
-                    id={'byMonth'}
-                    name={'dateGap'}
-                  />
-                  <label htmlFor="byMonth">本月</label>
-                </div>
-                <div>
-                  <input
-                    onChange={e => {
-                      setDateGap('byYear');
-                      handleExportExcelByYear();
-                    }}
-                    value={'byYear'}
-                    className={'radio-choose-date-gap'}
-                    type="radio"
-                    id={'byYear'}
-                    name={'dateGap'}
-                  />
-                  <label htmlFor="byYear">本年</label>
-                </div>
-                <div>
-                  <input
-                    onChange={e => {
-                      setDateGap('byCustom');
-                    }}
-                    value={'byCustom'}
-                    className={'radio-choose-date-gap'}
-                    type="radio"
-                    id={'byCustom'}
-                    name={'dateGap'}
-                  />
-                  <label htmlFor="byCustom">自定义时间段</label>
-                  {this.state.isRangePickerShow ?
-                    <RangePicker
+              {localStorage.getItem('user_role') === '1' ? (
+                <TabPane tab="数据导出" key="dataExport" style={{
+                  height: '300px',
+                  paddingLeft: '20px',
+                  paddingTop: '5px'
+                }}>
+                  <p style={{
+                    marginBottom: '5px'
+                  }}>请选择导出日期：</p>
+
+                  <div>
+                    <input
                       onChange={e => {
-                        handleExportExcelByCustom(e);
+                        setDateGap('byWeek');
+                        handleExportExcelByWeek();
                       }}
-                      style={{
-                        marginLeft: '10px',
-                        verticalAlign: 'middle'
+                      value={'byWeek'}
+                      className={'radio-choose-date-gap'}
+                      type="radio"
+                      id={'byWeek'}
+                      name={'dateGap'}
+                    />
+                    <label htmlFor="byWeek">本周</label>
+                  </div>
+                  <div>
+                    <input
+                      onChange={e => {
+                        setDateGap('byMonth');
+                        handleExportExcelByMonth();
                       }}
-                    /> : null}
-                </div>
-                <Button style={{
-                  margin: '10px'
-                }} type={'primary'}>
-                  <a href={`${this.state.exportExcelLink}`} target='_blank'>导出</a>
-                </Button>
-              </TabPane>
+                      value={'byMonth'}
+                      className={'radio-choose-date-gap'}
+                      type="radio"
+                      id={'byMonth'}
+                      name={'dateGap'}
+                    />
+                    <label htmlFor="byMonth">本月</label>
+                  </div>
+                  <div>
+                    <input
+                      onChange={e => {
+                        setDateGap('byYear');
+                        handleExportExcelByYear();
+                      }}
+                      value={'byYear'}
+                      className={'radio-choose-date-gap'}
+                      type="radio"
+                      id={'byYear'}
+                      name={'dateGap'}
+                    />
+                    <label htmlFor="byYear">本年</label>
+                  </div>
+                  <div>
+                    <input
+                      onChange={e => {
+                        setDateGap('byCustom');
+                      }}
+                      value={'byCustom'}
+                      className={'radio-choose-date-gap'}
+                      type="radio"
+                      id={'byCustom'}
+                      name={'dateGap'}
+                    />
+                    <label htmlFor="byCustom">自定义时间段</label>
+                    {this.state.isRangePickerShow ?
+                      <RangePicker
+                        onChange={e => {
+                          handleExportExcelByCustom(e);
+                        }}
+                        style={{
+                          marginLeft: '10px',
+                          verticalAlign: 'middle'
+                        }}
+                      /> : null}
+                  </div>
+                  <Button style={{
+                    margin: '10px'
+                  }} type={'primary'}>
+                    <a href={`${this.state.exportExcelLink}`} target='_blank'>导出</a>
+                  </Button>
+                </TabPane>
+              ) : null}
+
             </Tabs>
           </Col>
         </Row>

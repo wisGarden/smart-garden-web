@@ -6,10 +6,6 @@ import AllUserList from './AllUserList';
 import '../style/main.css';
 import {Tabs, Collapse} from 'antd';
 import api from '../service/api';
-import config from '../service/config';
-
-
-//TODO 在上传文件时要先确认有没有设置文件上传路径
 
 const Panel = Collapse.Panel;
 const TabPane = Tabs.TabPane;

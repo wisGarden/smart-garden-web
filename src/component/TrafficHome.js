@@ -95,14 +95,19 @@ class TrafficHome extends Component {
               onClick={this.handleMenuClick}
               inlineCollapsed={this.state.collapsed}
             >
-              <Menu.Item key="upload">
-                <Link style={{
-                  color: 'rgba(0,0,0,0.65)'
-                }} to={`/home/upload`}>
-                  <Icon type="upload"/>
-                  <span>录像上传</span>
-                </Link>
-              </Menu.Item>
+              
+              {localStorage.getItem('user_role') === '1' ? (
+                <Menu.Item key="upload">
+                  <Link style={{
+                    color: 'rgba(0,0,0,0.65)'
+                  }} to={`/home/upload`}>
+                    <Icon type="upload"/>
+                    <span>录像上传</span>
+                  </Link>
+                </Menu.Item>
+              ) : null}
+
+
               <SubMenu
                 onTitleClick={this.handleMenuClick}
                 key="list"
