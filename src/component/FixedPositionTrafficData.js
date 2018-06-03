@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Row, Col, Card, Tooltip, Tabs, DatePicker, Button} from 'antd';
+import {Spin, Row, Col, Card, Tooltip, Tabs, DatePicker, Button} from 'antd';
 import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
 import '../style/main.css';
 import websocket from '../service/webSocketCof';
@@ -23,7 +23,8 @@ class FixedPositionTrafficData extends Component {
     historyDataGap: 'byWeek', // 历史数据显示默认间隔
     historyData: [],
     exportExcelLink: '',
-    passenger_image: ''
+    passenger_image: '',
+    isPassengerDataLoaded: false
   };
 
   socket = null;
@@ -43,9 +44,6 @@ class FixedPositionTrafficData extends Component {
       onopen: this.handleSocketOnOpen,
       onclose: this.handleSocketOnClose,
       send: JSON.stringify({ 'file_path': decodeURI(localStorage.getItem('file_path')) })
-    });
-    this.setState({
-      imgSrc: `${config.posImgStreamUrl}/fixedPos/video_feed/${localStorage.getItem('file_path')}/`
     });
   }
 
@@ -128,16 +126,17 @@ class FixedPositionTrafficData extends Component {
     const transdata = JSON.parse(e.data);
     const passenger_data = transdata['passenger_data'];
     console.log(passenger_data);
-    // const passenger_image = transdata['passenger_image'];
-    // console.log(passenger_image);
     this.data.push({
       name: '',
       traffic_data: passenger_data,
     });
     this.setState({
       presentTrafficData: passenger_data,
-      // passenger_image,
-      // imgSrc: `${config.apiUrl}/static/${this.state.passenger_image.replace('media/', '')}`
+    }, () => {
+      this.setState({
+        imgSrc: `${config.posImgStreamUrl}/fixedPos/video_feed/${localStorage.getItem('file_path')}/`,
+        isPassengerDataLoaded: true
+      })
     });
   };
 
@@ -307,40 +306,53 @@ class FixedPositionTrafficData extends Component {
             </span>
           <span>{localStorage.getItem('file_during_time')}</span>
         </p>
-        <Row>
-          <Col span={12}>
-            <img style={{
-              width: '560px',
-              height: '315px'
-            }} src={this.state.imgSrc} alt=""/>
-          </Col>
-          <Col span={12}>
-            <Card title="实时客流量" bordered={false} style={{ width: '100%' }}>
-              <p style={{
-                lineHeight: '30px',
-                height: '30px'
-              }}>当日人流总量</p>
-              <p style={{
-                fontWeight: 'bold',
-                fontSize: '30px',
-                height: '40px',
-                lineHeight: '40px',
-                color: 'rgba(0,0,0,.85)',
-                display: 'inline-block'
-              }}>{this.data.reduce((pre, curr) => {
-                return pre + curr.traffic_data;
-              }, 0)}</p>
-              <ResponsiveContainer height={150}>
-                <LineChart
-                  data={this.data.slice(-20)}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <Tooltip/>
-                  <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
-                </LineChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
+        {this.state.isPassengerDataLoaded ? (
+          <Row>
+            <Col span={12}>
+              <img style={{
+                width: '560px',
+                height: '315px'
+              }} src={this.state.imgSrc} alt=""/>
+            </Col>
+            <Col span={12}>
+              <Card title="实时客流量" bordered={false} style={{ width: '100%' }}>
+                <p style={{
+                  lineHeight: '30px',
+                  height: '30px'
+                }}>当日人流总量</p>
+                <p style={{
+                  fontWeight: 'bold',
+                  fontSize: '30px',
+                  height: '40px',
+                  lineHeight: '40px',
+                  color: 'rgba(0,0,0,.85)',
+                  display: 'inline-block'
+                }}>{this.data.reduce((pre, curr) => {
+                  return pre + curr.traffic_data;
+                }, 0)}</p>
+                <ResponsiveContainer height={150}>
+                  <LineChart
+                    data={this.data.slice(-20)}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <Tooltip/>
+                    <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
+                  </LineChart>
+                </ResponsiveContainer>
+              </Card>
+            </Col>
+          </Row>
+        ) : (
+          <div style={{
+            height: '315px',
+          }}>
+            <Spin style={{
+              position: 'relative',
+              top: '50%',
+              left: '50%',
+              transform: 'translate3d(28%,-50%,0)'
+            }} size="large"/>
+          </div>
+        )}
         <Row>
           <Col span={24}>
             <Tabs
