@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Row, Col, Card, Tooltip, Tabs, DatePicker, Button, notification} from 'antd';
+import {Row, Col, Card, Tooltip, Tabs, DatePicker, Button, notification, Spin} from 'antd';
 import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
 import '../style/main.css'
 import websocket from "../service/webSocketCof";
@@ -20,7 +20,7 @@ class FixedAreaTrafficData extends Component {
     dateGap: 'byWeek',
     isRangePickerShow: false,
     isSocketOpen: false,
-    presentTrafficData: 0,
+    presentTrafficData: -1,
     fileName: '',
     fileDuringTime: '',
     historyData: [],
@@ -28,6 +28,8 @@ class FixedAreaTrafficData extends Component {
     densityLimit: 0,
     isWarningShownFlag: false,
     isSuccessShownFlag: false,
+    videoSrc: '',
+    isPassengerDataLoaded: false
   };
 
   socket = null;
@@ -218,6 +220,10 @@ class FixedAreaTrafficData extends Component {
           }
         });
       }
+      this.setState({
+        isPassengerDataLoaded: true,
+        videoSrc: `${config.apiUrl}/static${localStorage.getItem('file_path').replace('media/', '')}`
+      });
     });
   };
 
@@ -332,44 +338,57 @@ class FixedAreaTrafficData extends Component {
           marginRight: '10px',
           fontSize: '1.2em'
         }}>{localStorage.getItem('file_name')}</span><span>{localStorage.getItem('file_during_time')}</span></p>
-        <Row>
-          <Col span={12}>
-            <Player
-              style={{
-                width: '100%',
-                height: '350px',
-              }}
-              playsInline
-              autoPlay={true}
-              preload={'auto'}
-              src={`${config.apiUrl}/static${localStorage.getItem('file_path').replace('media/', '')}`}
-            />
-          </Col>
-          <Col span={12}>
-            <Card title="实时客流密度" bordered={false} style={{ width: '100%' }}>
-              <p style={{
-                lineHeight: '30px',
-                height: '30px'
-              }}>当前客流密度</p>
-              <p style={{
-                fontWeight: 'bold',
-                fontSize: '30px',
-                height: '40px',
-                lineHeight: '40px',
-                color: 'rgba(0,0,0,.85)',
-                display: 'inline-block'
-              }}>{parseInt(this.state.presentTrafficData)} 人</p>
-              <ResponsiveContainer height={150}>
-                <LineChart
-                  data={data.slice(-20)}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <Tooltip/>
-                  <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
-                </LineChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
+        {this.state.isPassengerDataLoaded ? (
+          <Row>
+            <Col span={12}>
+              <Player
+                style={{
+                  width: '100%',
+                  height: '350px',
+                }}
+                playsInline
+                autoPlay={true}
+                preload={'auto'}
+                src={this.state.videoSrc}
+              />
+            </Col>
+            <Col span={12}>
+              <Card title="实时客流密度" bordered={false} style={{ width: '100%' }}>
+                <p style={{
+                  lineHeight: '30px',
+                  height: '30px'
+                }}>当前客流密度</p>
+                <p style={{
+                  fontWeight: 'bold',
+                  fontSize: '30px',
+                  height: '40px',
+                  lineHeight: '40px',
+                  color: 'rgba(0,0,0,.85)',
+                  display: 'inline-block'
+                }}>{parseInt(this.state.presentTrafficData)} 人</p>
+                <ResponsiveContainer height={150}>
+                  <LineChart
+                    data={data.slice(-20)}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <Tooltip/>
+                    <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
+                  </LineChart>
+                </ResponsiveContainer>
+              </Card>
+            </Col>
+          </Row>
+        ) : (
+          <div style={{
+            height: '350px',
+          }}>
+            <Spin style={{
+              position: 'relative',
+              top: '50%',
+              left: '50%',
+              transform: 'translate3d(28%,-50%,0)'
+            }} size="large"/>
+          </div>
+        )}
         <Row>
           <Col span={24}>
             <Tabs
