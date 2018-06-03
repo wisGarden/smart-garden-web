@@ -49,6 +49,13 @@ class FixedPositionTrafficData extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.socket.close();
+    this.setState({
+      imgSrc: ''
+    });
+  }
+
   getWeekHistoryData = () => {
     api.getFixedPosTrafficData({
       start_date: (new Date(this.getWeek()[0])).getTime(),
@@ -147,13 +154,6 @@ class FixedPositionTrafficData extends Component {
     });
     console.log('The fixed pos socket is closed');
   };
-
-  componentWillUnmount() {
-    this.socket.close();
-    this.setState({
-      imgSrc: ''
-    });
-  }
 
   handleHistoryDataGap = gap => {
     this.setState({

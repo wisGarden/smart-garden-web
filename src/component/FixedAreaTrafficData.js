@@ -30,6 +30,8 @@ class FixedAreaTrafficData extends Component {
     isSuccessShownFlag: false,
   };
 
+  socket = null;
+
   constructor(props) {
     super(props);
   }
@@ -44,7 +46,7 @@ class FixedAreaTrafficData extends Component {
       }
     });
     this.getWeekHistoryData();
-    websocket.wsAreaConfig({
+    this.socket = websocket.wsAreaConfig({
       file_uuid: this.props.location.hash.substr(1),
       onmessage: this.handleSocketOnMessage,
       onopen: this.handleSocketOnOpen,
@@ -52,6 +54,11 @@ class FixedAreaTrafficData extends Component {
       send: JSON.stringify({ 'file_path': decodeURI(localStorage.getItem('file_path')) })
     });
   }
+
+  componentWillUnmount() {
+    this.socket.close();
+  }
+
 
   getWeek = () => {
     //按周日为一周的最后一天计算
