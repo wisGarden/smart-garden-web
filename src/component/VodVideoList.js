@@ -21,6 +21,7 @@ class VodVideoList extends Component {
       isVideoModalShow: false,
       showModalSite: '',
       showModalTime: '',
+      videoSrc: ''
     };
   }
 
@@ -46,7 +47,8 @@ class VodVideoList extends Component {
     this.setState({
       isVideoModalShow: true,
       showModalSite: site,
-      showModalTime: time
+      showModalTime: time,
+      videoSrc: `${config.apiUrl}/static${localStorage.getItem('file_path').replace('media/', '')}`
     });
   };
 
@@ -154,7 +156,7 @@ class VodVideoList extends Component {
             playsInline
             autoPlay={true}
             preload={'auto'}
-            src={`${config.apiUrl}/static${localStorage.getItem('file_path').replace('media/', '')}`}
+            src={this.state.videoSrc}
           />
         </Modal>
       </div>
