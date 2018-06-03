@@ -11,6 +11,7 @@ import VideoFileList from './VideoFileList';
 import TrafficSetting from './TrafficSetting';
 import FixedPositionTrafficData from './FixedPositionTrafficData';
 import FixedAreaTrafficData from './FixedAreaTrafficData';
+import Camera from './Camera';
 import Welcome from './Welcome';
 import {Route, Switch, Link} from 'react-router-dom';
 import api from '../service/api';
@@ -44,19 +45,7 @@ class TrafficHome extends Component {
   };
 
   render() {
-    const ContentRender = (menu) => {
-      // if (menu.substr(0, 4) === 'list') {
-      //   return <FixedPositionVideoList/>
-      // }
-      // if (menu === 'vod') {
-      //   return <EasyDSS/>;
-      // }
-      // if (menu === 'setting') {
-      //   return <TrafficSetting/>;
-      // }
-      // if (menu === 'upload') {
-      //   return <VideoUpload/>;
-      // }
+    const ContentRender = () => {
       return (
         <Switch>
           <Route exact path='/home/' component={Welcome}/>
@@ -68,6 +57,7 @@ class TrafficHome extends Component {
           <Route path='/home/setting' component={TrafficSetting}/>
           <Route path='/home/upload' component={VideoUpload}/>
           <Route path='/home/vod' component={Vod}/>
+          <Route path='/home/camera' component={Camera}/>
         </Switch>
       );
     };
@@ -95,7 +85,7 @@ class TrafficHome extends Component {
               onClick={this.handleMenuClick}
               inlineCollapsed={this.state.collapsed}
             >
-              
+
               {localStorage.getItem('user_role') === '1' ? (
                 <Menu.Item key="upload">
                   <Link style={{
@@ -106,7 +96,6 @@ class TrafficHome extends Component {
                   </Link>
                 </Menu.Item>
               ) : null}
-
 
               <SubMenu
                 onTitleClick={this.handleMenuClick}
@@ -147,6 +136,15 @@ class TrafficHome extends Component {
                 </Link>
               </Menu.Item>
 
+              <Menu.Item key="ip-camera">
+                <Link style={{
+                  color: 'rgba(0,0,0,0.65)'
+                }} to={`/home/camera`}>
+                  <Icon type="video-camera"/>
+                  <span>摄像头分析</span>
+                </Link>
+              </Menu.Item>
+
               <Menu.Item key="setting">
                 <Link
                   style={{
@@ -164,15 +162,6 @@ class TrafficHome extends Component {
           }}>
             <Content style={{ background: '#fff', padding: 24, margin: 0, }}>
               {ContentRender(this.state.menuItem)}
-              {/*<TrafficStatistics/>*/}
-              {/*<p>{*/}
-              {/*axios.get('http://localhost:8000/fixedPos/streaming/')*/}
-              {/*.then(res => {*/}
-              {/*const result = res.data;*/}
-              {/*console.log(result);*/}
-              {/*return 'hello';*/}
-              {/*})*/}
-              {/*}</p>*/}
             </Content>
           </Layout>
         </Layout>
