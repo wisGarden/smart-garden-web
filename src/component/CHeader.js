@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Avatar, Dropdown, Menu, Row, Col, message} from 'antd';
+import {Avatar, Dropdown, Menu, Row, Col, message, Icon} from 'antd';
 import '../style/main.css';
 import api from '../service/api'
 import {Link} from 'react-router-dom';
@@ -28,7 +28,9 @@ class CHeader extends Component {
   menu = (
     <Menu onClick={this.logout}>
       <Menu.Item key="0">
-        <a href="#">修改个人信息</a>
+        <Link to={'/home/setting/'}>
+          <span>修改个人信息</span>
+        </Link>
       </Menu.Item>
       <Menu.Divider/>
       <Menu.Item key="1">
@@ -75,13 +77,17 @@ class CHeader extends Component {
             }}>
               <Dropdown style={{
                 marginTop: '10px',
-
               }} overlay={this.menu} trigger={['hover']} placement={'bottomLeft'}>
                 {/*<Avatar className={'avatar'} size="large" icon="user"/>*/}
                 <Avatar className={'avatar'} style={{
                   verticalAlign: 'middle'
                 }} size='large'>{localStorage.getItem('user_name') || 'user'}</Avatar>
               </Dropdown>
+              <Icon type="caret-down" style={{
+                color: '#eee',
+                marginLeft: '5px',
+                position: 'relative',
+              }}/>
             </Col>
           )
         }
