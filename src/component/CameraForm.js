@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
 import {
-  Form, Select, Button, Icon, DatePicker, Radio, Input, message, Progress, InputNumber
+  Form, Select, Button, Icon, DatePicker, Tooltip, Radio, Input, message, InputNumber, Modal, Row, Col, Card, Spin
 } from 'antd';
 import api from '../service/api';
+import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
+import websocket from '../service/webSocketCof';
+import config from "../service/config";
 
 const { RadioGroup } = Radio;
 
@@ -16,6 +19,11 @@ const analyse_type = {
 };
 
 class CameraItemForm extends Component {
+
+  data = [];
+
+  socket = null;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -27,8 +35,11 @@ class CameraItemForm extends Component {
       traffic_density_limit: 0, // 地点客流密度上限
       all_sites: [],
       video_file: null,
-      percentage: 0,
-      isUploading: false
+      isModalPosAnalysisVisible: false,
+      streamingImgSrc: '',
+      posLiveSiteAnalyseType: '',
+      posLiveSrc: '',
+      isPassengerDataLoaded: false
     };
   }
 
@@ -42,15 +53,6 @@ class CameraItemForm extends Component {
       }
     });
   }
-
-  handleDuringTime = time => {
-    const start_time = time[0]._d;
-    const end_time = time[1]._d;
-    const file_during_time = `${start_time.getTime()}-${end_time.getTime()}`;
-    this.setState({
-      file_during_time,
-    });
-  };
 
   handleVideoSite = file_site => {
     this.setState({
@@ -90,42 +92,54 @@ class CameraItemForm extends Component {
     });
   };
 
-  uploadFile = (e) => {
-    const video_file = e.file;
-    this.setState({
-      video_file
-    });
-  };
-
-  handleVideoUploadSubmit = (e) => {
+  handleVideoLiveAnalysisSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
+        const posLiveSrc = `${values.protocol}://${values.hosts}`;
         this.setState({
-          isUploading: true
+          posLiveSrc,
         }, () => {
-          const { video_file, file_site, file_during_time, analyse_type, traffic_density_limit } = this.state;
-          const fileObj = {
-            video_file,
-            file_site,
-            file_during_time,
-            analyse_type,
-            traffic_density_limit
-          };
-          api.uploadVideoFile(fileObj, res => {
-            if (res.data.success === 'true') {
-              message.success('上传成功！', 1, () => {
-                window.location.reload();
+          this.state.all_sites.filter(site => {
+            if (site.site_name === values.file_site) {
+              this.setState({
+                posLiveSiteAnalyseType: site.site_analyse_type
+              }, () => {
+                if (this.state.posLiveSiteAnalyseType === 'fixed-position') {
+                  this.setState({
+                    isModalPosAnalysisVisible: true,
+                  });
+                  this.socket = websocket.wsPosLiveConfig({
+                    onmessage: this.handleSocketOnMessage,
+                    onopen: () => {
+                      console.log('The fixed pos socket is open');
+                    },
+                    onclose: () => {
+                      console.log('The fixed pos socket is closed');
+                    },
+                    send: JSON.stringify({ 'live_src': this.state.posLiveSrc })
+                  });
+                } else {
+                  console.log(this.state.posLiveSiteAnalyseType);
+                }
               });
             }
-          }, percentage => {
-            this.setState({
-              percentage
-            });
           })
         });
-
       }
+    });
+  };
+
+  handleSocketOnMessage = (e) => {
+    const transdata = JSON.parse(e.data);
+    const passenger_data = transdata['passenger_data'];
+    this.data.push({
+      name: '',
+      traffic_data: passenger_data,
+    });
+    this.setState({
+      streamingImgSrc: `${config.posImgStreamUrl}/fixedPos/video_feed/live/${this.state.posLiveSrc}/`,
+      isPassengerDataLoaded: true
     });
   };
 
@@ -137,7 +151,7 @@ class CameraItemForm extends Component {
     };
     return (
       <div>
-        <Form onSubmit={this.handleVideoUploadSubmit}>
+        <Form onSubmit={this.handleVideoLiveAnalysisSubmit}>
 
           <FormItem
             label='摄像机传输协议'
@@ -163,12 +177,10 @@ class CameraItemForm extends Component {
           >
             {getFieldDecorator('hosts', {
               rules: [{
-                type: 'text', message: '请输入摄像机的主机地址',
-              }, {
                 required: true, message: '请输入摄像机的主机地址',
               }],
             })(
-              <Input placeholder='http://***'/>
+              <Input placeholder='***'/>
             )}
           </FormItem>
 
@@ -272,6 +284,68 @@ class CameraItemForm extends Component {
             <Button type="primary" htmlType="submit">确定</Button>
           </FormItem>
         </Form>
+        <Modal
+          title={localStorage.getItem('file_name')}
+          visible={this.state.isModalPosAnalysisVisible}
+          footer={null}
+          destroyOnClose={true}
+          width={1170}
+          onCancel={() => {
+            this.socket.close();
+            this.setState({
+              isModalPosAnalysisVisible: false
+            })
+          }}
+        >
+          {this.state.isPassengerDataLoaded ? (
+            <Row>
+              <Col span={12}>
+                <img style={{
+                  width: '560px',
+                  height: '315px'
+                }} src={this.state.streamingImgSrc} alt=""/>
+              </Col>
+              <Col span={12}>
+                <Card title="实时客流量" bordered={false} style={{ width: '100%' }}>
+                  <p style={{
+                    lineHeight: '30px',
+                    height: '30px'
+                  }}>当日人流总量</p>
+                  <p style={{
+                    fontWeight: 'bold',
+                    fontSize: '30px',
+                    height: '40px',
+                    lineHeight: '40px',
+                    color: 'rgba(0,0,0,.85)',
+                    display: 'inline-block'
+                  }}>{this.data.reduce((pre, curr) => {
+                    return pre + curr.traffic_data;
+                  }, 0)}</p>
+                  <ResponsiveContainer height={150}>
+                    <LineChart
+                      data={this.data.slice(-20)}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <Tooltip/>
+                      <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
+                    </LineChart>
+                  </ResponsiveContainer>
+                </Card>
+              </Col>
+            </Row>
+
+          ) : (
+            <div style={{
+              height: '315px',
+            }}>
+              <Spin style={{
+                position: 'relative',
+                top: '50%',
+                left: '50%',
+                transform: 'translate3d(28%,-50%,0)'
+              }} size="large"/>
+            </div>
+          )}
+        </Modal>
       </div>
     );
   }
