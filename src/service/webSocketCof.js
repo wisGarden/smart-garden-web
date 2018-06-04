@@ -33,4 +33,15 @@ function wsAreaConfig(confObj) {
   return socket;
 }
 
-export default { wsPosConfig, wsAreaConfig, wsPosLiveConfig }
+function wsAreaLiveConfig(confObj) {
+  const socket = new WebSocket(`${config.wsUrl}/fixedArea/liveArea/`);
+  socket.onmessage = confObj.onmessage;
+  socket.onclose = confObj.onclose;
+  socket.onopen = e => {
+    confObj.onopen(e);
+    socket.send(confObj.send);
+  };
+  return socket;
+}
+
+export default { wsPosConfig, wsAreaConfig, wsPosLiveConfig, wsAreaLiveConfig }

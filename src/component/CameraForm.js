@@ -6,9 +6,11 @@ import api from '../service/api';
 import {ResponsiveContainer, LineChart, Line, BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar} from 'recharts';
 import websocket from '../service/webSocketCof';
 import config from "../service/config";
+import {Player} from 'video-react';
 
 const { RadioGroup } = Radio;
 
+const data = [];
 const RangePicker = DatePicker.RangePicker;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -39,7 +41,10 @@ class CameraItemForm extends Component {
       streamingImgSrc: '',
       posLiveSiteAnalyseType: '',
       posLiveSrc: '',
-      isPassengerDataLoaded: false
+      isPassengerDataLoaded: false,
+      isModalAreaAnalysisVisible: false,
+      isPassengerAreaLiveDataLoaded: false,
+      videoSrc: ''
     };
   }
 
@@ -110,7 +115,7 @@ class CameraItemForm extends Component {
                     isModalPosAnalysisVisible: true,
                   });
                   this.socket = websocket.wsPosLiveConfig({
-                    onmessage: this.handleSocketOnMessage,
+                    onmessage: this.handlePosSocketOnMessage,
                     onopen: () => {
                       console.log('The fixed pos socket is open');
                     },
@@ -121,6 +126,19 @@ class CameraItemForm extends Component {
                   });
                 } else {
                   console.log(this.state.posLiveSiteAnalyseType);
+                  this.setState({
+                    isModalAreaAnalysisVisible: true
+                  });
+                  this.socket = websocket.wsAreaLiveConfig({
+                    onmessage: this.handleAreaSocketOnMessage,
+                    onopen: () => {
+                      console.log('socket is open');
+                    },
+                    onclose: () => {
+                      console.log('The fixed area socket is closed');
+                    },
+                    send: JSON.stringify({ 'live_src': this.state.posLiveSrc })
+                  });
                 }
               });
             }
@@ -130,7 +148,24 @@ class CameraItemForm extends Component {
     });
   };
 
-  handleSocketOnMessage = (e) => {
+  handleAreaSocketOnMessage = e => {
+    const transdata = JSON.parse(e.data);
+    const passenger_data = transdata['passenger_data'];
+    data.push({
+      name: '',
+      traffic_data: passenger_data
+    });
+    this.setState({
+      presentTrafficData: passenger_data / 10
+    }, () => {
+      this.setState({
+        isPassengerAreaLiveDataLoaded: true,
+        videoSrc: `${config.apiUrl}/static/video/${this.state.posLiveSrc.split('8554/')[1]}`
+      });
+    });
+  };
+
+  handlePosSocketOnMessage = e => {
     const transdata = JSON.parse(e.data);
     const passenger_data = transdata['passenger_data'];
     this.data.push({
@@ -189,7 +224,7 @@ class CameraItemForm extends Component {
             label="摄像机端口号"
           >
             {getFieldDecorator('port-number', {
-              initialValue: 10080,
+              initialValue: 8554,
               rules: [{
                 required: true, message: '请选择摄像机的传输协议',
               }],
@@ -285,7 +320,7 @@ class CameraItemForm extends Component {
           </FormItem>
         </Form>
         <Modal
-          title={localStorage.getItem('file_name')}
+          title={this.state.file_site}
           visible={this.state.isModalPosAnalysisVisible}
           footer={null}
           destroyOnClose={true}
@@ -324,6 +359,73 @@ class CameraItemForm extends Component {
                   <ResponsiveContainer height={150}>
                     <LineChart
                       data={this.data.slice(-20)}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <Tooltip/>
+                      <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
+                    </LineChart>
+                  </ResponsiveContainer>
+                </Card>
+              </Col>
+            </Row>
+
+          ) : (
+            <div style={{
+              height: '315px',
+            }}>
+              <Spin style={{
+                position: 'relative',
+                top: '50%',
+                left: '50%',
+                transform: 'translate3d(28%,-50%,0)'
+              }} size="large"/>
+            </div>
+          )}
+        </Modal>
+
+        <Modal
+          title={this.state.file_site}
+          visible={this.state.isModalAreaAnalysisVisible}
+          footer={null}
+          destroyOnClose={true}
+          width={1170}
+          onCancel={() => {
+            this.socket.close();
+            this.setState({
+              isModalAreaAnalysisVisible: false
+            })
+          }}
+        >
+          {this.state.isPassengerAreaLiveDataLoaded ? (
+            <Row>
+              <Col span={12}>
+                <Player
+                  style={{
+                    width: '100%',
+                    height: '350px',
+                  }}
+                  playsInline
+                  autoPlay={true}
+                  preload={'auto'}
+                  src={this.state.videoSrc}
+                />
+              </Col>
+              <Col span={12}>
+                <Card title="实时客流密度" bordered={false} style={{ width: '100%' }}>
+                  <p style={{
+                    lineHeight: '30px',
+                    height: '30px'
+                  }}>当前客流密度</p>
+                  <p style={{
+                    fontWeight: 'bold',
+                    fontSize: '30px',
+                    height: '40px',
+                    lineHeight: '40px',
+                    color: 'rgba(0,0,0,.85)',
+                    display: 'inline-block'
+                  }}>{parseInt(this.state.presentTrafficData)} 人</p>
+                  <ResponsiveContainer height={150}>
+                    <LineChart
+                      data={data.slice(-20)}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                       <Tooltip/>
                       <Line type="monotone" dataKey="traffic_data" stroke="#82ca9d"/>
