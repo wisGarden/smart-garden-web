@@ -27,7 +27,9 @@ class AuthNewForm extends Component {
       const result = res.data;
       console.log(result);
       if (result.success === 'true') {
-        message.success('用户授权成功！');
+        message.success('用户授权成功！', () => {
+          window.location.reload();
+        });
       }
       if (result.success === 'false' && result.message === 'user exist') {
         message.error('该用户已存在，请更换用户名!');

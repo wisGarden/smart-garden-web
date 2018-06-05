@@ -31,14 +31,19 @@ class ChangePassForm extends Component {
       api.changePass(userObj, res => {
         const result = res.data;
         if (result.success === 'true') {
-          message.success('密码修改成功！');
           this.setState({
             user_old_pass: '',
             user_new_pass: '',
             repeat_user_new_pass: ''
+          }, () => {
+            message.success('密码修改成功！', () => {
+              window.location.reload();
+            });
           });
         } else if (result.success === 'false' && result.message === 'wrong pass') {
-          message.error('密码错误！');
+          message.error('旧密码错误！', () => {
+            window.location.reload();
+          });
         }
       })
     }

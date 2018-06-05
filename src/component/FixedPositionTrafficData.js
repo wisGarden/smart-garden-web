@@ -125,7 +125,6 @@ class FixedPositionTrafficData extends Component {
   handleSocketOnMessage = (e) => {
     const transdata = JSON.parse(e.data);
     const passenger_data = transdata['passenger_data'];
-    console.log(passenger_data);
     this.data.push({
       name: '',
       traffic_data: passenger_data,
